@@ -4,7 +4,7 @@ from tinymce import HTMLField
 # Create your models here.
 
 class Oposicion(models.Model):
-    oposicion = models.CharField(, max_length=200)
+    oposicion = models.CharField(max_length=200)
 
     class Meta:
         verbose_name = "Oposición"
@@ -17,7 +17,7 @@ class Oposicion(models.Model):
 class Tema(models.Model):
     tema = models.IntegerField()
     descripcion = models.CharField(max_length=200, blank=True, null=True)
-    oposicion = models.ForeignKey(Oposicion)
+    oposicion = models.ForeignKey(Oposicion, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['tema']
@@ -31,7 +31,7 @@ class Capitulo(models.Model):
     capitulo = models.CharField(max_length=10)
     titulo = models.CharField(max_length=200)
     contenido = HTMLField('Contenido')
-    tema = models.ForeignKey(Tema)
+    tema = models.ForeignKey(Tema, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['capitulo']
@@ -48,8 +48,8 @@ class Pregunta(models.Model):
     res_b = models.TextField(max_length=255)
     res_c = models.TextField(max_length=255)
     correcta = models.CharField(max_length = 1)
-    tema = models.ForeignKey(Tema, blank=True, null=True)
-    capitulo = models.ForeignKey(Capitulo, blank=True, null=True)
+    tema = models.ForeignKey(Tema, blank=True, null=True, on_delete=models.CASCADE)
+    capitulo = models.ForeignKey(Capitulo, blank=True, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s %s %s %s' % (self.pregunta, self.res_a, self.res_b, self.res_c)
