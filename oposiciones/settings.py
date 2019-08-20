@@ -33,6 +33,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOST', cast=Csv())
 
 INSTALLED_APPS = [
     'oposicion.apps.OposicionConfig',
+    'examen.apps.ExamenConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

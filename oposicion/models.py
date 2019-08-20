@@ -18,6 +18,7 @@ class Tema(models.Model):
     tema = models.IntegerField()
     descripcion = models.CharField(max_length=200, blank=True, null=True)
     oposicion = models.ForeignKey(Oposicion, on_delete=models.CASCADE)
+    conocimiento = models.IntegerField(blank=True, null=True)
 
     class Meta:
         ordering = ['tema']
@@ -31,6 +32,7 @@ class Capitulo(models.Model):
     capitulo = models.CharField(max_length=10)
     titulo = models.CharField(max_length=200)
     contenido = HTMLField('Contenido')
+    conocimiento = models.IntegerField(blank=True, null=True)
     tema = models.ForeignKey(Tema, on_delete=models.CASCADE)
 
     class Meta:
