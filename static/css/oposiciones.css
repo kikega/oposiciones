@@ -1,0 +1,209 @@
+.color-texto {
+    color: #ffc107;
+}
+
+/* Timeline */
+.timeline-with-icons {
+    border-left: 1px solid #ffc107;
+    position: relative;
+    list-style: none;
+}
+
+.timeline-with-icons .timeline-item {
+    position: relative;
+}
+
+.timeline-with-icons .timeline-item:after {
+    position: absolute;
+    display: block;
+    top: 0;
+}
+
+.timeline-with-icons .timeline-icon {
+    position: absolute;
+    left: -48px;
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: black;
+    border-radius: 50%;
+    height: 31px;
+    width: 31px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilos para la foto de perfil o icono en Detalle Cinto Negro*/
+.profile-picture-container {
+    margin-bottom: 1.5rem;
+    /* Espacio debajo de la foto/icono */
+}
+
+.profile-picture {
+    width: 120px;
+    /* Tamaño deseado */
+    height: 120px;
+    object-fit: cover;
+    /* Evita distorsión de la imagen */
+}
+
+.profile-icon {
+    font-size: 6rem;
+    /* Tamaño grande para el icono */
+    line-height: 1;
+    width: 120px;
+    /* Para ocupar espacio similar a la imagen */
+    height: 120px;
+    display: flex;
+    /* Centrar el icono dentro del contenedor */
+    align-items: center;
+    justify-content: center;
+    /* Opcional: un fondo/borde ligero si quieres que el icono siempre tenga un 'marco' circular */
+    /* background-color: #f8f9fa; */
+    /* border-radius: 50%; */
+    margin: 0 auto;
+    /* Centrar el icono si es flex/inline-block */
+}
+
+/* Placeholder para el gráfico */
+ #yearsPerGradeChartPlaceholder {
+    height: 300px; /* Altura deseada para el gráfico */
+    background-color: #e9ecef; /* Color gris claro de fondo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d; /* Color de texto muted */
+    border-radius: 0.375rem; /* Igual que el card */
+    font-style: italic;
+}
+
+/* Color del menú activo en la barra de navegación */
+.nav-link.active {
+    color: #ffc107 !important;
+}
+
+.nav-link:hover {
+    color: #ffc107;
+}
+
+.breadcrumb-item.active {
+    color: yellow !important;
+}
+
+.card:hover {
+    border-color: #ffc107;
+}
+
+
+/* Para centrar el menú principal de forma más robusta si es necesario */
+@media (min-width: 768px) { /* md breakpoint */
+    .navbar-nav.centered-nav {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/*Estilos básicos para el Timeline */
+.timeline {
+    position: relative;
+    padding-left: 50px;
+    border-left: 2px solid #ffc107;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -60px;
+    top: 5px;
+    width: 18px;
+    height: 18px;
+    background-color: #0d6efd;
+    border: 1px solid #ffc107;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.timeline-item.start .timeline-marker {
+    background-color: #198754;
+}
+
+.timeline-item.exam .timeline-marker {
+    background-color: #ffc107;
+}
+
+.timeline-content .card-title {
+    margin-bottom: 0.25rem;
+}
+
+.timeline-date {
+    font-size: 0.85em;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+
+
+/* Gráfico años en grado */
+.chart-container {
+    width: auto; /* O un valor fijo como 600px */
+    max-width: 600px; /* Límite superior */
+    height: 300px; /* O déjalo en 'auto' si quieres que la altura dependa del aspect ratio */
+    margin: auto; /* Centrar y añadir margen */
+    position: relative; /* Importante para la responsividad de Chart.js */
+}
+
+/* Ajustar el CSS del widget Admin */
+.selector {
+    display: flex;
+    flex-grow: 1;
+    gap: 0 10px;
+    width: auto;
+    float: none;
+}
+
+.selector .selector-filter {
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 30px;
+}
+
+.selector select {
+    height: 17.2em;
+    flex: 1 0 auto;
+    overflow: scroll;
+    width: 100%;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    font-size: 1rem;
+    margin-bottom: 30px;
+    height: 20em;
+}
+
+.selector-available, .selector-chosen {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+}
+
+.selector .selector-available input {
+    background-color: var(--bs-body-bg);
+    border: 0;
+}
+
+.selector .selector-chosen input {
+    background-color: var(--bs-body-bg);
+    border: 0;
+}
+
+a.selector-chooseall, a.selector-clearall {
+    margin-bottom: 30px;
+}

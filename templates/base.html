@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cintos negros de la Okinawa Goju Ryu Karate-Do Kiokai OGKKE">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="icon" href={% static "img/favicon.png" %} size="25x25" type="image/png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.0/css/dataTables.dataTables.css">
+
+    {%  if request.resolver_match.url_name == "login" %}
+        <link rel="stylesheet" href={% static "css/op-login.css" %}>
+    {% else %}
+        <link rel="stylesheet" href={% static "css/oposiciones.css" %}>
+    {% endif %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <title>Oposiciones GC</title>
+</head>
+
+{%  if request.resolver_match.url_name == "login" %}
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+{% else %}
+<body class="d-flex flex-column min-vh-100">
+{% endif %}
+    
+    <main class="container mt-5 mb-5 {% if request.resolver_match.url_name != "login" %}flex-grow-1{% endif %}">
+        
+        {% block container %}
+        {% endblock container %}
+
+        <!-- Modal Cambio contraseña-->
+        <div class="modal fade" id="modalCambiocontraseña" tabindex="-1" aria-labelledby="modalCambiocontraseñaLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 color-texto" id="modalCambiocontraseñaLabel">Cambio contraseña</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h2 class="h4 mb-4 fw-normal text-center">Usuario actual: {{user.username}}</h2>
+                        <form action="{% url "cambio_password" %}" method='post' id="cambioPassword">
+                            {% csrf_token %}
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="oldPassword" name="old_password" placeholder="Contraseña">
+                                <label for="oldPassword">Contraseña actual</label>
+                            </div>
+                            <div class="input-group mb-3">
+                                <button class="input-group-text view-password" data-target="newPassword" type="button" >
+                                    <i class="bi bi-eye-slash-fill" id="icono1"></i>
+                                </button>
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" name="new_password" id="newPassword" placeholder="Contraseña">
+                                    <label for="newPassword">Contraseña</label>
+                                </div>     
+                            </div>    
+                            <div class="input-group mb-3">
+                                <button class="input-group-text view-password" data-target="newPasswordConf" type="button">
+                                    <i class="bi bi-eye-slash-fill" id="icono2"></i>
+                                </button>
+                                <div class="form-floating">
+                                    <input type="password" class="form-control" name="new_password_conf" id="newPasswordConf" placeholder="Confirmar contraseña">
+                                    <label for="newPasswordConf">Confirmar contraseña</label>
+                                </div>     
+                            </div>
+                        </form>
+                        <div class="alert alert-danger alert-dismissible fade show d-none" role="alert" id="alertPassword">
+                            Las contraseñas no coinciden
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" form= "cambioPassword" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    {% if request.resolver_match.url_name != "login" %}
+    <footer class="footer py-4 mt-5 bg-body-tertiary">
+        <div class="container">
+            <div class="d-flex justify-content-center">
+                <img class="img-thumbnail" src="{% static "img/logo2.png" %}" alt="Logo egalvez" width="137" height="40">
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/2.3.0/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7"></script>
+    <script src={% static "js/password_change.js" %}></script>
+
+</body>
+</html>

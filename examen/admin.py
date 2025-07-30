@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Tema, Capitulo, Pregunta, Examen, RespuestaUsuario
+from .models import Tema, Capitulo, Pregunta, Examen
 
 # Define un 'inline' para los capítulos
 class CapituloInline(admin.TabularInline): # O StackedInline

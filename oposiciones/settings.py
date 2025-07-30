@@ -39,6 +39,7 @@ USE_X_FORWARDED_HOST = True
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    'usuarios.apps.UsuariosConfig',
     "examen.apps.ExamenConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -132,6 +133,17 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'collectstatic')
+
+# Archivos multimedia
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Usuarios customizados
+AUTH_USER_MODEL = 'usuarios.Usuario'
+
+# URLs para autenticación
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = "home"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

@@ -54,15 +54,18 @@ class Capitulo(models.Model):
         max_length=255,
         help_text=_("Título del capítulo o epígrafe.")
     )
-    contenido = models.TextField(
-        _("contenido del capítulo"),
-        blank=True,
-        help_text=_("Descripción o contenido. Puedes usar Markdown o reStructuredText.")
-    )
     orden = models.PositiveIntegerField(
         _("orden"),
         default=0,
         help_text=_("Número para ordenar los capítulos dentro de un mismo tema.")
+    )
+    documentacion = models.FileField(
+        _("documentcion"),
+        upload_to = "pdf",
+        max_length = 255,
+        blank=True,
+        null=True,
+        help_text = "Archivo PDF con la documentación del capítulo."
     )
 
     class Meta:
@@ -116,10 +119,9 @@ class Pregunta(models.Model):
         null=True,
         help_text=_("Explicación opcional sobre por qué la respuesta es correcta. Admite Markdown.")
     )
-    activa = models.BooleanField(
-        _("activa"),
-        default=True,
-        help_text=_("Desmarca para ocultar esta pregunta en los nuevos exámenes.")
+    frecuencia = models.PositiveIntegerField(
+        _("frecuencia"),
+        help_text=_("Frecuencia con la que aparece la pregunta en el examen.")
     )
 
     class Meta:
@@ -143,19 +145,14 @@ class Examen(models.Model):
         related_name='examenes',
         verbose_name=_("usuario")
     )
-    preguntas = models.ManyToManyField(
+    preguntas_falladas = models.ManyToManyField(
         Pregunta,
         related_name='examenes',
         verbose_name=_("preguntas")
     )
-    fecha_creacion = models.DateTimeField(
+    fecha_ejecucion = models.DateTimeField(
         _("fecha de creación"),
         auto_now_add=True
-    )
-    fecha_finalizacion = models.DateTimeField(
-        _("fecha de finalización"),
-        null=True,
-        blank=True
     )
     puntuacion = models.FloatField(
         _("puntuación"),
@@ -166,46 +163,7 @@ class Examen(models.Model):
     class Meta:
         verbose_name = _("examen")
         verbose_name_plural = _("exámenes")
-        ordering = ['-fecha_creacion']
+        ordering = ['-fecha_ejecucion']
 
     def __str__(self):
         return f"Examen de {self.usuario.username} - {self.fecha_creacion.strftime('%d/%m/%Y %H:%M')}"
-
-
-class RespuestaUsuario(models.Model):
-    """
-    Almacena la respuesta de un usuario a una pregunta en un examen.
-    """
-    examen = models.ForeignKey(
-        Examen,
-        on_delete=models.CASCADE,
-        related_name='respuestas_usuario',
-        verbose_name=_("examen")
-    )
-    pregunta = models.ForeignKey(
-        Pregunta,
-        on_delete=models.CASCADE,
-        related_name='respuestas_usuario',
-        verbose_name=_("pregunta")
-    )
-    respuesta_seleccionada = models.CharField(
-        _("respuesta seleccionada"),
-        max_length=1,
-        choices=Pregunta.OpcionesRespuesta.choices
-    )
-    es_correcta = models.BooleanField(
-        _("es correcta"),
-        default=False
-    )
-
-    class Meta:
-        verbose_name = _("respuesta de usuario")
-        verbose_name_plural = _("respuestas de usuario")
-        unique_together = ('examen', 'pregunta')
-
-    def save(self, *args, **kwargs):
-        self.es_correcta = self.respuesta_seleccionada == self.pregunta.respuesta_correcta
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Respuesta a '{self.pregunta.enunciado[:30]}...' en examen {self.examen.id}"

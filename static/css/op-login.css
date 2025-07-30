@@ -1,0 +1,36 @@
+html,
+body {
+  height: 100%;
+  background-image: url("img/login-bg.webp");
+  background-size: cover;
+  background-position: center;
+}
+
+.form-signin {
+  max-width: 400px;
+  padding: 1rem;
+  border: 3px solid #8d8c8c;
+  border-radius: 10px;
+  background-color: #021020;
+  opacity: 0.8;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: 10px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.form-signin h1 {
+  color: #ffc107;
+}
