@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+{% include "examen/header.html" %}
+
+<section class="mb-5 color-texto">
+    <div class="text-center">
+        <div class="container py-3">
+            <h1>Oposiciones<h1>
+            <h2 class="col-lg-8 mx-auto lead">
+                Resultados de la simulación de exámen
+        </div>
+    </div>
+</section>
+
+<div class="container mt-4">
+    <div class="card text-center">
+        <div class="card-header">
+            <h3>Resultados del Examen</h3>
+        </div>
+        <div class="card-body">
+            <h1 class="card-title">Puntuación Final: {{ examen.puntuacion|floatformat:2 }}</h1>
+            <p class="card-text">Examen realizado el {{ examen.fecha_finalizacion|date:"d/m/Y \a \l\a\s H:i" }}</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="alert alert-success"><h4>Aciertos: {{ aciertos }}</h4></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="alert alert-danger"><h4>Errores: {{ errores }}</h4></div>
+                </div>
+                <div class="col-md-4">
+                    <div class="alert alert-warning"><h4>Sin contestar: {{ sin_contestar }}</h4></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if preguntas_falladas %}
+    <div class="mt-5">
+        <h2>Revisión de Preguntas Falladas</h2>
+        <hr>
+        {% for respuesta in preguntas_falladas %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>Pregunta del capítulo:</strong> {{ respuesta.pregunta.capitulo.titulo }}
+            </div>
+            <div class="card-body">
+                <p><strong>Enunciado:</strong> {{ respuesta.pregunta.enunciado|linebreaks }}</p>
+                <p class="text-danger"><strong>Tu respuesta ({{ respuesta.respuesta_seleccionada }}):</strong>
+                    {% if respuesta.respuesta_seleccionada == 'A' %}{{ respuesta.pregunta.respuesta_a }}{% endif %}
+                    {% if respuesta.respuesta_seleccionada == 'B' %}{{ respuesta.pregunta.respuesta_b }}{% endif %}
+                    {% if respuesta.respuesta_seleccionada == 'C' %}{{ respuesta.pregunta.respuesta_c }}{% endif %}
+                    {% if respuesta.respuesta_seleccionada == 'D' %}{{ respuesta.pregunta.respuesta_d }}{% endif %}
+                </p>
+                <p class="text-success"><strong>Respuesta correcta ({{ respuesta.pregunta.respuesta_correcta }}):</strong>
+                    {{ respuesta.pregunta.texto_respuesta_correcta }}
+                </p>
+                {% if respuesta.pregunta.explicacion %}
+                <div class="alert alert-info">
+                    <strong>Explicación:</strong> {{ respuesta.pregunta.explicacion|linebreaks }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Volver al Inicio</a>
+    </div>
+</div>
+
+{% endblock container %}

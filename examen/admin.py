@@ -12,6 +12,10 @@ class TemaAdmin(admin.ModelAdmin):
     # ¡Aquí está la magia!
     inlines = [CapituloInline]
 
+admin.site.site_header = 'Panel de control OPOSICIONES'
+admin.site.index_title = 'Administración OPOSICIONES'
+admin.site.site_title = 'Admin OPOSICIONES'
+
 # ... registrar el resto de modelos ...
 admin.site.register(Capitulo)
 admin.site.register(Pregunta)

@@ -5,7 +5,9 @@
 
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
 
 # --- Modelos para el Temario ---
 
@@ -96,6 +98,8 @@ class Pregunta(models.Model):
         on_delete=models.CASCADE,
         related_name='preguntas',
         verbose_name=_("capítulo"),
+        blank = True,
+        null = True,
         help_text=_("El capítulo al que pertenece esta pregunta.")
     )
     enunciado = models.TextField(
@@ -119,10 +123,6 @@ class Pregunta(models.Model):
         null=True,
         help_text=_("Explicación opcional sobre por qué la respuesta es correcta. Admite Markdown.")
     )
-    frecuencia = models.PositiveIntegerField(
-        _("frecuencia"),
-        help_text=_("Frecuencia con la que aparece la pregunta en el examen.")
-    )
 
     class Meta:
         verbose_name = _("pregunta")
@@ -130,7 +130,44 @@ class Pregunta(models.Model):
         ordering = ['capitulo']
 
     def __str__(self):
-        return f"Pregunta de '{self.capitulo.titulo}': {self.enunciado[:50]}..."
+        return f"{self.enunciado[:50]}..."
+
+    def get_absolute_url(self):
+        """Devuelve la URL absoluta que permite acceder a una instancia especifica de la pregunta."""
+        return reverse('pregunta-detalle', kwargs={'pk': self.pk})
+
+    def get_respuesta_texto(self, letra):
+        """
+        Retorna el texto de la respuesta correspondiente a la letra dada.
+
+        Args:
+            letra (str): Letra de la respuesta ('A', 'B', 'C', 'D')
+
+        Returns:
+            str: Texto de la respuesta o cadena vacía si la letra no es válida
+        """
+        respuestas = {
+            'A': self.respuesta_a,
+            'B': self.respuesta_b,
+            'C': self.respuesta_c,
+            'D': self.respuesta_d,
+        }
+        return respuestas.get(letra.upper(), '')
+
+    @property
+    def todas_respuestas(self):
+        """Retorna un diccionario con todas las respuestas."""
+        return {
+            'A': self.respuesta_a,
+            'B': self.respuesta_b,
+            'C': self.respuesta_c,
+            'D': self.respuesta_d,
+        }
+    
+    @property
+    def texto_respuesta_correcta(self):
+        """Retorna el texto de la respuesta correcta."""
+        return self.get_respuesta_texto(self.respuesta_correcta)
 
 
 # --- Modelos para Exámenes y Resultados ---
@@ -145,25 +182,97 @@ class Examen(models.Model):
         related_name='examenes',
         verbose_name=_("usuario")
     )
-    preguntas_falladas = models.ManyToManyField(
+    fecha_creacion = models.DateTimeField(
+        _("fecha de creación"),
+        auto_now_add=True
+    )
+    fecha_finalizacion = models.DateTimeField(
+        _("fecha de finalización"),
+        null=True,
+        blank=True
+    )
+    preguntas = models.ManyToManyField(
         Pregunta,
         related_name='examenes',
         verbose_name=_("preguntas")
     )
-    fecha_ejecucion = models.DateTimeField(
-        _("fecha de creación"),
-        auto_now_add=True
+    respuestas_correctas = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Respuestas correctas"),
+        help_text=_("Número de respuestas correctas")
+    )
+    respuestas_erroneas = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("Respuestas erróneas"),
+        help_text=_("Número de respuestas erróneas")
     )
     puntuacion = models.FloatField(
         _("puntuación"),
         null=True,
-        blank=True
+        blank=True,
+        help_text=_("Puntuación total obtenida en el examen")
     )
 
     class Meta:
         verbose_name = _("examen")
         verbose_name_plural = _("exámenes")
-        ordering = ['-fecha_ejecucion']
+        ordering = ['-fecha_creacion']
 
     def __str__(self):
         return f"Examen de {self.usuario.username} - {self.fecha_creacion.strftime('%d/%m/%Y %H:%M')}"
+
+    def get_absolute_url(self):
+        return reverse('examen-detalle', kwargs={'uuid': self.uuid})
+
+    @property
+    def porcentaje_acierto(self):
+        """Calcula el porcentaje de acierto del examen."""
+        return round((self.respuestas_correctas / 100) * 100, 2)
+
+class RespuestaUsuario(models.Model):
+    """
+    Almacena la respuesta de un usuario a una pregunta en un examen.
+    """
+    examen = models.ForeignKey(
+        Examen,
+        on_delete=models.CASCADE,
+        related_name='respuestas_usuario',
+        verbose_name=_("examen"),
+        help_text=_("Examen al que pertenece esta respuesta")
+    )
+    pregunta = models.ForeignKey(
+        Pregunta,
+        on_delete=models.CASCADE,
+        related_name='respuestas_usuario',
+        verbose_name=_("pregunta")
+    )
+    respuesta_seleccionada = models.CharField(
+        _("respuesta seleccionada"),
+        max_length=1,
+        choices=Pregunta.OpcionesRespuesta.choices
+    )
+    es_correcta = models.BooleanField(
+        _("es correcta"),
+        default=False
+    )
+
+    class Meta:
+        verbose_name = _("respuesta de usuario")
+        verbose_name_plural = _("respuestas de usuario")
+        unique_together = ('examen', 'pregunta')
+
+    def save(self, *args, **kwargs):
+        self.es_correcta = self.respuesta_seleccionada == self.pregunta.respuesta_correcta
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Respuesta a '{self.pregunta.enunciado[:30]}...' en examen {self.examen.id}"
+
+    @property
+    def texto_respuesta_seleccionada(self):
+        """Retorna el texto de la respuesta seleccionada."""
+        if not self.respuesta_seleccionada:
+            return "Sin responder"
+        return self.pregunta.get_respuesta_texto(self.respuesta_seleccionada)
+    
+    

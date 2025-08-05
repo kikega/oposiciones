@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block container %}
+    
+    {% include "examen/header.html" %}
+
+    <section class="mb-5 color-texto">
+        <div class="text-center">
+            <div class="container py-3">
+                <h1>Oposiciones<h1>
+                <h2 class="col-lg-8 mx-auto lead">
+                    Capitulos del tema {{ tema.titulo }}
+                </h2>
+            </div>
+        </div>
+    </section>
+
+    <section class="album py-5">
+        <div class="container">
+            
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Título</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for capitulo in capitulos %}
+                        <tr>
+                            <td>{{ capitulo.orden }}</td>
+                            <td>{{ capitulo.titulo }}</td>
+                            <td><a href="{% url 'examen:descargar_capitulo' pk=capitulo.pk %}">Documentación</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+        </div>
+    </section>
+
+    {% endblock container %}

@@ -26,5 +26,6 @@ from examen import views as examen_views
 urlpatterns = [
     path("", examen_views.HomeView.as_view(), name='home'),
     path("usuarios/", include("usuarios.urls")),
+    path("examen/", include("examen.urls")),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -19,7 +19,12 @@
                         {% else %}
                             <a class="nav-link" href="{% url "home" %}">Inicio</a></li>
                         {% endif %}
-
+                    <li class="nav-item">
+                        {%  if request.resolver_match.url_name == "temario" %} 
+                            <a class="nav-link active" aria-current="page" href="{% url "examen:temario" %}">Temario</a></li>
+                        {% else %}
+                            <a class="nav-link" href="{% url "examen:temario" %}">Temario</a></li>
+                        {% endif %}
                     <!-- Opciones de menú si el usuario es staff -->
                     {% if user.is_staff %}
                         <li><a class="nav-link" href="{% url 'admin:index' %}">Administración</a></li>
@@ -32,7 +37,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#"
                                 id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="me-2 text-warning"> {{ user.email|capfirst }} </span>
+                                <span class="me-2 text-warning"> {{ user.username|capfirst }} </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
                                 <li><a class="dropdown-item" data-bs-toggle="modal" href="#modalCambiocontraseña">Cambiar contraseña</a></li>

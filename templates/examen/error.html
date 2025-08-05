@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block container %}
+    
+    {% include "examen/header.html" %}
+
+    <section class="mb-5 color-texto">
+        <div class="text-center">
+            <div class="container py-3">
+                <h1>Oposiciones<h1>
+                <h2 class="col-lg-8 mx-auto lead">
+                    Capitulos del tema {{ tema.titulo }}
+                </h2>
+            </div>
+        </div>
+    </section>
+
+    <h1 class="text-center mb-5 color-texto">Se ha producido un error</h1>
+
+    <section class="album py-5">
+        <div class="d-flex justify-content-center mt-5 mb-5">
+            <div class="card mb-3" style="max-width: 800px;">
+                <div class="row g-0">
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title color-texto">Error de procesamiento {{ error_code}}</h5>
+                      <p class="card-text">Se ha producido un error inesperado al procesar la solicitud. Por favor, vuelvalo a intentar.</p>
+                      <p class="card-text">Descripción del error: {{ error_message }}.</p>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <a class="btn btn-outline-warning" onclick="history.back()"><i class="bi bi-arrow-left"></i> Volver atrás</a>
+        </div>
+    </section>
+
+
+    {% endblock container %}

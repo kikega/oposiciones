@@ -19,12 +19,35 @@
     <section class="album py-5">
         <div class="container">
             
-            <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-3 g-3">
+            <div class="row row-cols-1 m-3">
                 <article class="col">
                     <div class="card shadow-sm">
-                        <img src="{% static "img/estudiante-color.webp" %}" class="card-img-top img-fluid" alt="Dojos">
+                        <!--<img src="{% static "img/estudiante-color.webp" %}" class="card-img-top img-fluid" alt="Dojos">-->
                         <div class="m-3">
-                            <h3 class="card-title"><i class="bi bi-houses"></i> Dojos <span class="badge text-bg-dark fs-3">{{ dojos }}</span></h3>
+                            <h3 class="card-title"><i class="bi bi-clipboard-check"></i> Simulaciones realizadas <span class="badge text-bg-dark fs-3">{{ dojos }}</span></h3>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div class="btn-group">
+                                    <a href="#" class="btn btn-outline-warning"><i class="bi bi-arrow-up-right-circle"></i> Ver Simulaciones realizadas</a>
+                                    <form method="post" action="{% url 'examen:simular_examen' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-warning mx-3">Comenzar Examen</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="row row-cols-1 m-3">
+                <article class="col">
+                    <div class="card shadow-sm">
+                        
+                        <div class="m-3">
+                            <h3 class="card-title"><i class="bi bi-trophy-fill"></i> Notas obtenidas<span class="badge text-bg-dark fs-3">{{ cn }}</span></h3>
                         </div>
 
                         <div class="card-body">
@@ -36,24 +59,9 @@
                         </div>
                     </div>
                 </article>
+            </div>
 
-                <article class="col">
-                    <div class="card shadow-sm">
-                        <img src="{% static "img/cn.jpg" %}" class="card-img-top img-fluid" alt="DojosCintos negros">
-                        <div class="m-3">
-                            <h3 class="card-title"><i class="bi bi-person"></i> Cintos Negros <span class="badge text-bg-dark fs-3">{{ cn }}</span></h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <div class="btn-group">
-                                    <a href="#" class="btn btn-outline-warning"><i class="bi bi-arrow-up-right-circle"></i> Ver todos</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
+            <div class="row row-cols-1 m-3">
                 <article class="col">
                     <div class="card shadow-sm">
                         <img src="{% static "img/gassukus.jpg" %}" class="card-img-top img-fluid" alt="Gasshukus">

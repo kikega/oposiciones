@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block container %}
+
+{% include "examen/header.html" %}
+
+<section class="mb-5 color-texto">
+    <div class="text-center">
+        <div class="container py-3">
+            <h1>Oposiciones<h1>
+            <h2 class="col-lg-8 mx-auto lead">
+                Simulación de exámen
+        </div>
+    </div>
+</section>
+
+<div class="container mt-4">
+    <div class="progress mb-4" style="height: 25px;">
+        <div class="progress-bar" role="progressbar" 
+             style="width: {% widthratio page_obj.start_index total_preguntas 100 %}%;" 
+             aria-valuenow="{{ page_obj.start_index }}" aria-valuemin="0" aria-valuemax="{{ total_preguntas }}">
+             Preguntas {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ total_preguntas }}
+        </div>
+    </div>
+
+    <h2>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</h2>
+    <hr>
+
+    <form method="post" action="{% url 'examen:simulacion_pagina' examen.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="page_number" value="{{ page_obj.number }}">
+
+        {% for pregunta in page_obj %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>Pregunta {{ forloop.counter|add:page_obj.start_index|add:"-1" }}:</strong> 
+                {{ pregunta.enunciado|linebreaks }}
+            </div>
+            <div class="card-body">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_a" value="A">
+                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_a">a) {{ pregunta.respuesta_a }}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_b" value="B">
+                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_b">b) {{ pregunta.respuesta_b }}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_c" value="C">
+                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_c">c) {{ pregunta.respuesta_c }}</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_d" value="D">
+                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_d">d) {{ pregunta.respuesta_d }}</label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-grid gap-2">
+            {% if page_obj.has_next %}
+                <button type="submit" class="btn btn-info btn-lg">Siguiente Página</button>
+            {% else %}
+                <button type="submit" class="btn btn-success btn-lg">Finalizar y Ver Resultados</button>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+{% endblock container %}
