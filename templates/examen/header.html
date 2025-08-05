@@ -25,11 +25,7 @@
                         {% else %}
                             <a class="nav-link" href="{% url "examen:temario" %}">Temario</a></li>
                         {% endif %}
-                    <!-- Opciones de menú si el usuario es staff -->
-                    {% if user.is_staff %}
-                        <li><a class="nav-link" href="{% url 'admin:index' %}">Administración</a></li>
-                    {% endif %}
-                    <!-- Fin de las opciones del usuario staff -->
+                    <li><a class="nav-link" href="{% url 'admin:index' %}">Administración</a></li>
                 </ul>
 
                 <div class="d-flex align-items-center">
