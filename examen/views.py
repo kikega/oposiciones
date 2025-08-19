@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.paginator import Paginator
 from django.utils import timezone
+from django.db.models import Max, Min, Avg
 
 # Librerias Python
 from decimal import Decimal, ROUND_HALF_UP
@@ -29,6 +30,21 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Obtenemos el número de simulaciones realizadas
+        simulaciones_realizadas = Examen.objects.count()
+        context['simulaciones_realizadas'] = simulaciones_realizadas
+
+        # Obtenemos la nota maxima y la minima
+        puntuacion_maxima = Examen.objects.aggregate(Max('puntuacion'))['puntuacion__max']    
+        context['puntuacion_maxima'] = puntuacion_maxima
+        puntuacion_minima = Examen.objects.aggregate(Min('puntuacion'))['puntuacion__min']
+        context['puntuacion_minima'] = puntuacion_minima
+        # Obtenemos la nota media
+        puntuacion_media = Examen.objects.aggregate(Avg('puntuacion'))['puntuacion__avg']
+        context['puntuacion_media'] = puntuacion_media
+        
+        return context
 
 
 class TemarioView(LoginRequiredMixin, ListView):
@@ -189,6 +205,8 @@ class ResultadosView(LoginRequiredMixin, DetailView):
         return context
 
     def calcular_y_guardar_puntuacion(self, examen):
+        """Calcula la puntuacion obtenida por el usuario y la actualiza en la base de datos"""    
+        # Calcular la puntuación
         aciertos = examen.respuestas_usuario.filter(es_correcta=True).count()
         errores = examen.respuestas_usuario.filter(es_correcta=False).count()
 
@@ -200,6 +218,8 @@ class ResultadosView(LoginRequiredMixin, DetailView):
 
         # Actualizar el objeto Examen en la base de datos
         examen.puntuacion = puntuacion_final
+        examen.respuestas_correctas = aciertos
+        examen.respuestas_erroneas = errores
         examen.fecha_finalizacion = timezone.now()
         examen.save()
 

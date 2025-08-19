@@ -157,53 +157,7 @@
     position: relative; /* Importante para la responsividad de Chart.js */
 }
 
-/* Ajustar el CSS del widget Admin */
-.selector {
-    display: flex;
-    flex-grow: 1;
-    gap: 0 10px;
-    width: auto;
-    float: none;
-}
-
-.selector .selector-filter {
-    border: var(--bs-border-width) solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    font-size: 1rem;
-    line-height: 1.5;
-    margin-bottom: 30px;
-}
-
-.selector select {
-    height: 17.2em;
-    flex: 1 0 auto;
-    overflow: scroll;
-    width: 100%;
-    border: var(--bs-border-width) solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    background-color: var(--bs-body-bg);
-    font-size: 1rem;
-    margin-bottom: 30px;
-    height: 20em;
-}
-
-.selector-available, .selector-chosen {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    flex: 1 1;
-}
-
-.selector .selector-available input {
-    background-color: var(--bs-body-bg);
-    border: 0;
-}
-
-.selector .selector-chosen input {
-    background-color: var(--bs-body-bg);
-    border: 0;
-}
-
-a.selector-chooseall, a.selector-clearall {
-    margin-bottom: 30px;
+.progress-bar {
+    text-align: left;
+    font-size: 20px; /* Ajusta este valor según necesites */
 }

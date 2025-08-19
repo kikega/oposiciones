@@ -16,70 +16,99 @@
         </div>
     </section>
 
-    <section class="album py-5">
-        <div class="container">
-            
-            <div class="row row-cols-1 m-3">
-                <article class="col">
-                    <div class="card shadow-sm">
-                        <!--<img src="{% static "img/estudiante-color.webp" %}" class="card-img-top img-fluid" alt="Dojos">-->
-                        <div class="m-3">
-                            <h3 class="card-title"><i class="bi bi-clipboard-check"></i> Simulaciones realizadas <span class="badge text-bg-dark fs-3">{{ dojos }}</span></h3>
-                        </div>
+    <section class="row mb-5 gy-4">  
+        <div class="row row-cols-1 m-3">
+            <article class="col">
+                <div class="card shadow-sm">
+                    <div class="m-3">
+                        <h3 class="card-title"><i class="bi bi-clipboard-check"></i> Simulaciones realizadas {{ simulaciones_realizadas }} <span class="badge text-bg-dark fs-3">{{ dojos }}</span></h3>
+                    </div>
 
-                        <div class="card-body">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <div class="btn-group">
-                                    <a href="#" class="btn btn-outline-warning"><i class="bi bi-arrow-up-right-circle"></i> Ver Simulaciones realizadas</a>
-                                    <form method="post" action="{% url 'examen:simular_examen' %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-warning mx-3">Comenzar Examen</button>
-                                    </form>
-                                </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-end align-items-center">
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-outline-warning"><i class="bi bi-arrow-up-right-circle"></i> Ver Simulaciones realizadas</a>
+                                <form method="post" action="{% url 'examen:simular_examen' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-warning mx-3">Comenzar Examen</button>
+                                </form>
                             </div>
                         </div>
                     </div>
-                </article>
-            </div>
-
-            <div class="row row-cols-1 m-3">
-                <article class="col">
-                    <div class="card shadow-sm">
-                        
-                        <div class="m-3">
-                            <h3 class="card-title"><i class="bi bi-trophy-fill"></i> Notas obtenidas<span class="badge text-bg-dark fs-3">{{ cn }}</span></h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <div class="btn-group">
-                                    <a href="#" class="btn btn-outline-warning"><i class="bi bi-arrow-up-right-circle"></i> Ver todos</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-
-            <div class="row row-cols-1 m-3">
-                <article class="col">
-                    <div class="card shadow-sm">
-                        <img src="{% static "img/gassukus.jpg" %}" class="card-img-top img-fluid" alt="Gasshukus">
-                        <div class="m-3">
-                            <h3 class="card-title"><i class="bi bi-people"></i> Gasshukus <span class="badge text-bg-dark fs-3">{{ cursos }}</span></h3>
-                        </div>
-
-                        <div class="card-body">
-                            <div class="d-flex justify-content-end align-items-center">
-                                <div class="btn-group">
-                                    <a href="#" class="btn btn-outline-warning"><i class="bi bi-arrow-up-right-circle"></i> Ver todos</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
+                </div>
+            </article>
         </div>
     </section>
+
+    <section class="mb-5">  
+        <div class="row row-cols-1 m-3">
+            <article class="col">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <i class="bi bi-clipboard-check"></i> Simulaciones realizadas {{ simulaciones_realizadas }}
+                            <span class="badge text-bg-dark fs-3">{{ dojos }}</span>
+                        </h3>
+
+                        <div class="d-flex justify-content-end align-items-center mt-4 gap-2">
+                            <a href="#" class="btn btn-outline-warning">
+                                <i class="bi bi-arrow-up-right-circle"></i> Ver Simulaciones realizadas
+                            </a>
+                            <form method="post" action="{% url 'examen:simular_examen' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-warning">
+                                    Comenzar Examen
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="row mb-5">
+        <!-- Columna Izquierda: Información Personal -->
+        <div class="col-lg-5 col-md-6">
+            <div class="card h-100">
+
+                <div class="card-body text-center"> <!-- text-center para centrar foto/icono y texto -->
+
+                    <!-- Contenedor para la Foto o Icono -->
+                    <div class="profile-picture-container mt-2">
+                        {% if puntuacion_media > 70 %}
+                            <img src="{% static 'img/contento.webp' %}" alt="Estudiante contento">
+                        {% else %}
+                            <img src="{% static 'img/enfado.webp' %}" alt="Estudiante enfadado">
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Gráfico de Barras -->
+        <div class="col-lg-7 col-md-6">
+            <div class="card h-100">
+                <div class="card-header text-center">
+                    <h4 class="mb-0">
+                        <span class="badge bg-dark p-2"><i class="bi bi-trophy-fill"></i> Notas obtenidas</span>
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="progress mt-4" role="progressbar" aria-label="Nota máxima" aria-valuenow={{ puntuacion_maxima|floatformat:2 }} aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+                        <div class="progress-bar bg-success p-2" style="width: {{ puntuacion_maxima|floatformat:0 }}%">Nota máxima: {{ puntuacion_maxima|floatformat:2 }} </div>
+                    </div>
+                    <div class="progress mt-4" role="progressbar" aria-label="Warning example" aria-valuenow={{ puntuacion_media|floatformat:2 }} aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+                        <div class="progress-bar bg-warning p-2" style="width: {{ puntuacion_media|floatformat:0}}%">Nota media: {{ puntuacion_media|floatformat:2 }}</div>
+                    </div>
+                    <div class="progress mt-4" role="progressbar" aria-label="Danger example" aria-valuenow={{ puntuacion_minima|floatformat:2 }} aria-valuemin="0" aria-valuemax="100" style="height: 40px">
+                        <div class="progress-bar bg-danger p-2" style="width: {{ puntuacion_minima|floatformat:0 }}%">Nota Mínima: {{ puntuacion_minima|floatformat:2 }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section> <!-- Fin Sección Superior -->
 
     {% endblock container %}
