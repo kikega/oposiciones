@@ -3,7 +3,7 @@ Django settings for oposiciones project.
 
 Configuration for production environment.
 """
-
+import os
 from .base import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -34,5 +34,3 @@ DATABASES = {
         'PORT': config('DB_PORT'),
     }
 }
-
-

@@ -132,3 +132,63 @@ LOGIN_REDIRECT_URL = "home"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Configuración de logging
+USE_X_FORWARDED_HOST = True
+
+LOGGING = {
+    # Versión del esquema, siempre es 1
+    "version": 1,
+    # Deja activados los loggers por defecto
+    "disable_existing_loggers": False,
+
+    # ----------- FORMATOS DE SALIDA -----------
+    # Define como se verá cada línea de log
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} - {message}',
+            'style': '{',  # Requiere Python 3.2+. Usa llaves en vez de %s
+        },
+    },
+
+    # ----------- SALIDAS DE LOGS --------------
+    # Define dónde se guardarán los archivos
+    'handlers': {
+        'file_db': {
+            'level': 'DEBUG',  # Nivel medio de eventos para registrar
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/db.log'),
+            'when': 'midnight',         # Rota cada día
+            'backupCount': 7,
+            'utc': True, 
+            'formatter': 'verbose',  # Usa el formato definido arriba
+        },
+        'file_access': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/access.log'),
+            'when': 'midnight',         # Rota cada día
+            'backupCount': 7,
+            'utc': True, 
+            'formatter': 'verbose',
+        },
+    },
+
+    # ----------- REGISTRO DE EVENTOS ----------
+    # Define que cosas se van a registrar y con qué nivel de detalle
+    'loggers': {
+        # Logger para el backend de la base de datos (Django ejecutando SQL)
+        'django.db.backends': {
+            'handlers': ['file_db'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+
+        # Logger personalizado que puedes usar en tu middleware o señales
+        'access_logger': {
+            'handlers': ['file_access'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
