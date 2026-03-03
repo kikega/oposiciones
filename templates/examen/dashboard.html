@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Dashboard de Preparación de Oposiciones</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+              rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap"
+              rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+              rel="stylesheet" />
+        <link rel="stylesheet" href="{% static 'css/oposiciones.css' %}">
+    </head>
+    <body>
+        <aside class="sidebar d-flex flex-column">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <span class="material-symbols-outlined">school</span>
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold" style="color: var(--primary-dark)">OpoPrep</h5>
+                    <small class="text-muted">Panel de Control</small>
+                </div>
+            </div>
+            <nav class="nav flex-column mt-3">
+                <a class="nav-link active" href="#">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+                <a class="nav-link" href="#">
+                    <span class="material-symbols-outlined">quiz</span> Tests
+                </a>
+                <a class="nav-link" href="#">
+                    <span class="material-symbols-outlined">menu_book</span> Teoría
+                </a>
+                <a class="nav-link" href="#">
+                    <span class="material-symbols-outlined">history</span> Repaso
+                </a>
+                <a class="nav-link" href="#">
+                    <span class="material-symbols-outlined">analytics</span> Estadísticas
+                </a>
+            </nav>
+            <div class="px-3 mt-4">
+                <button class="btn btn-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2">
+                    <span class="material-symbols-outlined fs-5">add_circle</span> Nuevo Examen
+                </button>
+            </div>
+            <div class="user-profile">
+                <div class="d-flex align-items-center gap-3">
+                    <img alt="User"
+                         class="avatar"
+                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIWFdpunGrjUKnSOvJGLgS8FrycOyt3Z8PgHIXWHacbOwr4X6IWd2Uqj915bmuifOreBWhQKM4onC_UjU6zCGqhmTm8UnNvUPaqdV0BDMqtNB409_M47bQl9NxFIXsZQzwZULYBu7n-yNlYRcK-Wlc6yf_Oeh7c_7hy4EA7RZN49AkXWwb6bq6yr1xsgMXt70bSGgrDeEc4szrk_AHQccCGmlBXPMGqhWxRLPMUj6eZjPfinuHismsIxmF8Qpa4q1RapcXBH1V2rQ" />
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="mb-0 fw-semibold text-truncate">Alex Martí</p>
+                        <small class="text-muted">Plan Elite</small>
+                    </div>
+                    <span class="material-symbols-outlined text-muted" style="cursor: pointer;">settings</span>
+                </div>
+            </div>
+        </aside>
+        <main class="main-content">
+            <div class="container-fluid">
+                <header class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold mb-1">Bienvenido, Alex</h2>
+                        <p class="text-muted mb-0">Resumen de tu preparación para oposiciones.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2 px-3">
+                            <span class="material-symbols-outlined fs-6">download</span> Reporte
+                        </button>
+                        <button class="btn btn-sm d-flex align-items-center gap-2 px-3"
+                                style="background-color: rgba(13, 76, 131, 0.1);
+                                       color: var(--primary-color);
+                                       font-weight: 600">
+                            <span class="material-symbols-outlined fs-6">schedule</span> Planificador
+                        </button>
+                    </div>
+                </header>
+                <div class="row g-3 mb-4">
+                    <div class="col">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <p class="kpi-label mb-1">Nota Media</p>
+                                <div class="d-flex align-items-end gap-2">
+                                    <p class="kpi-value">8.4</p>
+                                    <span class="text-success fw-bold small mb-1">+5%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <p class="kpi-label mb-1">Tests Realizados</p>
+                                <div class="d-flex align-items-end gap-2">
+                                    <p class="kpi-value">45</p>
+                                    <span class="material-symbols-outlined text-muted mb-1">task</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <p class="kpi-label mb-1">Nota Máxima</p>
+                                <div class="d-flex align-items-end gap-2">
+                                    <p class="kpi-value">10.0</p>
+                                    <span class="text-success fw-bold small mb-1">+2%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <p class="kpi-label mb-1">Tiempo Estudio</p>
+                                <div class="d-flex align-items-end gap-2">
+                                    <p class="kpi-value">120h</p>
+                                    <span class="text-success fw-bold small mb-1">+10h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card kpi-card">
+                            <div class="card-body">
+                                <p class="kpi-label mb-1">Acierto Global</p>
+                                <div class="d-flex align-items-end gap-2">
+                                    <p class="kpi-value">78%</p>
+                                    <span class="text-success fw-bold small mb-1">+3%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-8">
+                        <div class="card h-100">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div>
+                                        <h5 class="fw-bold mb-0">Evolución de Notas</h5>
+                                        <small class="text-muted">Progreso de los últimos 30 días</small>
+                                    </div>
+                                    <select class="form-select form-select-sm w-auto border-0 bg-light fw-bold text-muted">
+                                        <option>Últimos 30 días</option>
+                                        <option>Últimos 3 meses</option>
+                                    </select>
+                                </div>
+                                <div class="chart-container mt-4">
+                                    <svg class="w-100 h-100" preserveAspectRatio="none" viewBox="0 0 500 150">
+                                        <defs>
+                                        <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stop-color="#0d4c83" stop-opacity="0.2"></stop>
+                                        <stop offset="100%" stop-color="#0d4c83" stop-opacity="0"></stop>
+                                        </linearGradient>
+                                        </defs>
+                                        <path d="M0 120 C 50 110, 100 130, 150 90 C 200 50, 250 100, 300 40 C 350 20, 400 60, 450 30 C 480 15, 500 25, 500 25 V 150 H 0 Z" fill="url(#chartGradient)">
+                                        </path>
+                                        <path d="M0 120 C 50 110, 100 130, 150 90 C 200 50, 250 100, 300 40 C 350 20, 400 60, 450 30 C 480 15, 500 25, 500 25" fill="none" stroke="#0d4c83" stroke-width="3">
+                                        </path>
+                                    </svg>
+                                    <div class="d-flex justify-content-between mt-2 px-1">
+                                        <span class="text-muted fw-bold small">SEM 1</span>
+                                        <span class="text-muted fw-bold small">SEM 2</span>
+                                        <span class="text-muted fw-bold small">SEM 3</span>
+                                        <span class="text-muted fw-bold small">SEM 4</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card h-100">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-1">Intensidad Semanal</h5>
+                                <p class="small text-muted mb-4">Nivel de actividad diario</p>
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">LUN</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">MAR</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom" style="width: 60%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">MIE</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom" style="width: 95%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">JUE</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom" style="width: 40%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">VIE</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">SAB</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom opacity-50" style="width: 20%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-muted" style="width: 35px;">DOM</span>
+                                        <div class="progress flex-grow-1">
+                                            <div class="progress-bar bg-primary-custom opacity-50" style="width: 15%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-4 pt-3 border-top">
+                                    <a class="text-decoration-none fw-bold small"
+                                       href="#"
+                                       style="color: var(--primary-color)">Ver Registro Completo</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-4">Rendimiento por Tema</h5>
+                                <div class="d-flex flex-column gap-4">
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="small fw-medium">Derecho Administrativo</span>
+                                            <span class="small fw-bold text-success">85%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="small fw-medium">Constitución Española</span>
+                                            <span class="small fw-bold text-primary-custom">72%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-primary-custom" style="width: 72%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="small fw-medium">Régimen Local</span>
+                                            <span class="small fw-bold text-warning">58%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-warning" style="width: 58%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="small fw-medium">Ley de Función Pública</span>
+                                            <span class="small fw-bold text-danger">42%</span>
+                                        </div>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-danger" style="width: 42%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="d-flex flex-column gap-4 h-100">
+                            <div class="card flex-grow-1">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-4">Revisión Urgente</h5>
+                                    <div class="d-flex flex-column gap-3">
+                                        <div class="d-flex gap-3">
+                                            <div class="bg-danger rounded-circle mt-1"
+                                                 style="width: 8px;
+                                                        height: 8px;
+                                                        flex-shrink: 0"></div>
+                                            <div>
+                                                <p class="mb-0 fw-semibold small">Procedimiento Administrativo Común</p>
+                                                <p class="text-muted small mb-0 font-italic">Fallada 12 veces esta semana</p>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-3">
+                                            <div class="bg-danger rounded-circle mt-1"
+                                                 style="width: 8px;
+                                                        height: 8px;
+                                                        flex-shrink: 0"></div>
+                                            <div>
+                                                <p class="mb-0 fw-semibold small">Estructura del Poder Judicial</p>
+                                                <p class="text-muted small mb-0 font-italic">Fallada 8 veces esta semana</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-light w-100 mt-4 fw-bold small py-2">Analizar Errores</button>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="card action-card h-100 bg-primary-custom text-white text-center border-0">
+                                        <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                                            <span class="material-symbols-outlined fs-1 mb-2">auto_stories</span>
+                                            <span class="fw-bold small">Estudiar
+                                                <br />
+                                            Teoría</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card action-card h-100 text-center">
+                                        <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                                            <span class="material-symbols-outlined fs-1 mb-2 text-primary-custom">error</span>
+                                            <span class="fw-bold small text-primary-custom">Repasar
+                                                <br />
+                                            Fallos</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm overflow-hidden">
+                    <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">Exámenes Recientes</h5>
+                        <button class="btn btn-link text-decoration-none fw-bold p-0"
+                                style="color: var(--primary-color)">Ver Todo</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nombre del Examen</th>
+                                    <th>Fecha</th>
+                                    <th>Calificación</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">Simulacro General #12</div>
+                                        <small class="text-muted">100 preguntas • Temas variados</small>
+                                    </td>
+                                    <td class="text-muted small">24 Oct, 2023</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                                              style="background-color: rgba(25, 135, 84, 0.1);
+                                                     color: #198754">8.75 / 10</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-link btn-sm text-decoration-none fw-bold"
+                                                style="color: var(--primary-color)">Revisar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">Tema 4: Presupuestos Locales</div>
+                                        <small class="text-muted">20 preguntas • Modo enfoque</small>
+                                    </td>
+                                    <td class="text-muted small">22 Oct, 2023</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                                              style="background-color: rgba(220, 53, 69, 0.1);
+                                                     color: #dc3545">4.50 / 10</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-link btn-sm text-decoration-none fw-bold"
+                                                style="color: var(--primary-color)">Revisar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">Simulacro Constitución</div>
+                                        <small class="text-muted">50 preguntas • Con tiempo</small>
+                                    </td>
+                                    <td class="text-muted small">21 Oct, 2023</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                                              style="background-color: rgba(13, 76, 131, 0.1);
+                                                     color: var(--primary-color)">7.20 / 10</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-link btn-sm text-decoration-none fw-bold"
+                                                style="color: var(--primary-color)">Revisar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

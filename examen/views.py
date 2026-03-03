@@ -36,14 +36,14 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context['simulaciones_realizadas'] = simulaciones_realizadas
 
         # Obtenemos la nota maxima y la minima
-        puntuacion_maxima = Examen.objects.aggregate(Max('puntuacion'))['puntuacion__max']    
+        puntuacion_maxima = Examen.objects.aggregate(Max('puntuacion'))['puntuacion__max']
         context['puntuacion_maxima'] = puntuacion_maxima
         puntuacion_minima = Examen.objects.aggregate(Min('puntuacion'))['puntuacion__min']
         context['puntuacion_minima'] = puntuacion_minima
         # Obtenemos la nota media
         puntuacion_media = Examen.objects.aggregate(Avg('puntuacion'))['puntuacion__avg']
         context['puntuacion_media'] = puntuacion_media
-        
+
         return context
 
 

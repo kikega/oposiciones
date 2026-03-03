@@ -10,32 +10,96 @@ from django.utils.translation import gettext_lazy as _
 
 
 # --- Modelos para el Temario ---
+class Oposicion(models.Model):
+    """
+    Representa una oposición específica.
+    Ej: "Oposición de Auxiliar Administrativo"
+    """
+    nombre = models.CharField(
+        _("nombre de la oposición"),
+        max_length=255,
+        unique=True,
+        help_text=_("Nombre único para la oposición.")
+    )
+    descripcion = models.TextField(
+        _("descripción"),
+        blank=True,
+        null=True,
+        help_text=_("Descripción opcional de la oposición.")
+    )
 
-class Tema(models.Model):
+    class Meta:
+        verbose_name = _("oposición")
+        verbose_name_plural = _("oposiciones")
+        ordering = ['nombre']
+
+    def __str__(self):
+        return self.nombre
+class Bloque(models.Model):
     """
     Representa un bloque o tema principal de la oposición.
     Ej: "Bloque I: Derecho Constitucional"
     """
     titulo = models.CharField(
-        _("título del tema"),
+        _("título del bloque"),
         max_length=255,
         unique=True,
-        help_text=_("Título único para el tema principal.")
+        help_text=_("Oposición a la que pertenece este bloque.")
     )
     orden = models.PositiveIntegerField(
         _("orden"),
         default=0,
         db_index=True,
-        help_text=_("Número para ordenar la lista de temas.")
+        help_text=_("Número para ordenar la lista de bloques.")
+    )
+
+    class Meta:
+        verbose_name = _("bloque")
+        verbose_name_plural = _("bloques")
+        ordering = ['orden', 'titulo']
+
+    def __str__(self):
+        return self.titulo
+class Tema(models.Model):
+    """
+    Representa un capítulo, sección o epígrafe dentro de un Tema.
+    Las preguntas se vincularán a este nivel.
+    Ej: "Tema 1: La Constitución Española de 1978"
+    """
+    bloque = models.ForeignKey(
+        Bloque,
+        on_delete=models.CASCADE,
+        related_name='temasBloque',
+        verbose_name=_("bloque"),
+        help_text=_("Bloque al que pertenece este tema.")
+    )
+    orden = models.PositiveIntegerField(
+        _("orden"),
+        default=0,
+        help_text=_("Número para ordenar los temas dentro de un mismo bloque.")
+    )
+    titulo = models.CharField(
+        _("título del tema"),
+        max_length=255,
+        help_text=_("Título del tema o epígrafe.")
+    )
+    documentacion = models.FileField(
+        _("documentcion"),
+        upload_to = "pdf",
+        max_length = 255,
+        blank=True,
+        null=True,
+        help_text = "Archivo PDF con la documentación del Tema."
     )
 
     class Meta:
         verbose_name = _("tema")
         verbose_name_plural = _("temas")
-        ordering = ['orden', 'titulo']
+        unique_together = ('bloque', 'titulo')
+        ordering = ['bloque', 'orden', 'titulo']
 
     def __str__(self):
-        return self.titulo
+        return f"{self.bloque.titulo}: {self.titulo}"
 
 
 class Capitulo(models.Model):
@@ -47,27 +111,27 @@ class Capitulo(models.Model):
     tema = models.ForeignKey(
         Tema,
         on_delete=models.CASCADE,
-        related_name='capitulos',
-        verbose_name=_("tema"),
-        help_text=_("Tema principal al que pertenece este capítulo.")
-    )
-    titulo = models.CharField(
-        _("título del capítulo"),
-        max_length=255,
-        help_text=_("Título del capítulo o epígrafe.")
+        related_name='capitulosTema',
+        verbose_name=_("capitulos"),
+        help_text=_("Capítulo de un tema.")
     )
     orden = models.PositiveIntegerField(
         _("orden"),
         default=0,
         help_text=_("Número para ordenar los capítulos dentro de un mismo tema.")
     )
-    documentacion = models.FileField(
-        _("documentcion"),
-        upload_to = "pdf",
-        max_length = 255,
-        blank=True,
-        null=True,
-        help_text = "Archivo PDF con la documentación del capítulo."
+    titulo = models.CharField(
+        _("título del capítulo"),
+        max_length=255,
+        help_text=_("Título del capítulo o epígrafe.")
+    )
+
+    oposicion = models.ManyToManyField(
+        Oposicion,
+        related_name='capítulosOposicion',
+        verbose_name=_("oposición"),
+        help_text=_("Oposición al que pertenece este capítulo."),
+        blank=True
     )
 
     class Meta:
@@ -79,9 +143,44 @@ class Capitulo(models.Model):
     def __str__(self):
         return f"{self.tema.titulo}: {self.titulo}"
 
+class Articulo(models.Model):
+    """Representa un articulo dentro de un tema
+    Ej: "Artículo 1: Derechos y deberes fundamentales"
+    """
+    capitulo = models.ForeignKey(
+        Capitulo,
+        on_delete=models.CASCADE,
+        related_name='artículosCapitulo',
+        verbose_name=_('capitulos'),
+        help_text=_("Capítulo al que pertenece este artículo.")
+    )
+    titulo = models.CharField(
+        _("título del artículo"),
+        max_length=255,
+        unique=True,
+        help_text=_("Título único para el artículo.")
+    )
+    contenido = models.TextField(
+        _("contenido del artículo"),
+        help_text=_("Contenido completo del artículo. Admite Markdown.")
+    )
+    numero = models.CharField(
+        _("número del artículo"),  
+        max_length=50,
+        unique=True,
+        help_text=_("Número o identificador único del artículo.")
+    )
+    class Meta:
+        verbose_name = _("artículo")
+        verbose_name_plural = _("artículos")
+        ordering = ['numero']
+
+    def __str__(self):
+        return self.titulo
+    
+
 
 # --- Modelo para las Preguntas (VERSIÓN COMPLETA Y CORREGIDA) ---
-
 class Pregunta(models.Model):
     """
     Representa una pregunta de tipo test.
@@ -93,15 +192,6 @@ class Pregunta(models.Model):
         C = 'C', 'Respuesta C'
         D = 'D', 'Respuesta D'
 
-    capitulo = models.ForeignKey(
-        Capitulo,
-        on_delete=models.CASCADE,
-        related_name='preguntas',
-        verbose_name=_("capítulo"),
-        blank = True,
-        null = True,
-        help_text=_("El capítulo al que pertenece esta pregunta.")
-    )
     enunciado = models.TextField(
         _("enunciado de la pregunta"),
         help_text=_("El texto de la pregunta. También puede usar Markdown.")
@@ -123,11 +213,18 @@ class Pregunta(models.Model):
         null=True,
         help_text=_("Explicación opcional sobre por qué la respuesta es correcta. Admite Markdown.")
     )
+    articulo = models.ForeignKey(
+        Articulo,
+        on_delete=models.CASCADE,
+        related_name='preguntasArticulo',
+        verbose_name=_("artículo"),
+        help_text=_("Artículo al que pertenece esta pregunta")
+    )
 
     class Meta:
         verbose_name = _("pregunta")
         verbose_name_plural = _("preguntas")
-        ordering = ['capitulo']
+        ordering = ['articulo']
 
     def __str__(self):
         return f"{self.enunciado[:50]}..."

@@ -1,3 +1,176 @@
+/*
+:root {
+    --primary-color: #0d4c83;
+    --primary-dark: #044178;
+    --bg-light: #f8f9fa;
+    --sidebar-width: 260px;
+}
+
+body {
+    font-family: 'Public Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: #334155;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    border-right: 1px solid #e2e8f0;
+    z-index: 1000;
+    display: flex;
+    flex-column: column;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-icon {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-link {
+    color: #64748b;
+    padding: 0.75rem 1.25rem;
+    margin: 0.25rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background-color: #f1f5f9;
+    color: var(--primary-color);
+}
+
+.nav-link.active {
+    background-color: rgba(13, 76, 131, 0.1);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.progress {
+    height: 8px;
+    border-radius: 100px;
+}
+
+.text-primary-custom {
+    color: var(--primary-color);
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-color);
+}
+
+.table thead th {
+    background-color: #f8fafc;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1rem 1.5rem;
+}
+
+.table tbody td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+}
+
+
+
+.user-profile {
+    padding: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    margin-top: auto;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}*/
+
+/* Tarjetas del dashboard */
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.action-card {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+}
+
+.kpi-card .card-body {
+    padding: 1.25rem;
+}
+
+.kpi-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.kpi-label {
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Graficos */
+.chart-container {
+    height: 250px;
+    width: 100%;
+}
+
+/* CSS derivado de OGKKE */
 .color-texto {
     color: #ffc107;
 }
@@ -66,14 +239,18 @@
 }
 
 /* Placeholder para el gráfico */
- #yearsPerGradeChartPlaceholder {
-    height: 300px; /* Altura deseada para el gráfico */
-    background-color: #e9ecef; /* Color gris claro de fondo */
+#yearsPerGradeChartPlaceholder {
+    height: 300px;
+    /* Altura deseada para el gráfico */
+    background-color: #e9ecef;
+    /* Color gris claro de fondo */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6c757d; /* Color de texto muted */
-    border-radius: 0.375rem; /* Igual que el card */
+    color: #6c757d;
+    /* Color de texto muted */
+    border-radius: 0.375rem;
+    /* Igual que el card */
     font-style: italic;
 }
 
@@ -96,7 +273,9 @@
 
 
 /* Para centrar el menú principal de forma más robusta si es necesario */
-@media (min-width: 768px) { /* md breakpoint */
+@media (min-width: 768px) {
+
+    /* md breakpoint */
     .navbar-nav.centered-nav {
         position: absolute;
         left: 50%;
@@ -150,14 +329,20 @@
 
 /* Gráfico años en grado */
 .chart-container {
-    width: auto; /* O un valor fijo como 600px */
-    max-width: 600px; /* Límite superior */
-    height: 300px; /* O déjalo en 'auto' si quieres que la altura dependa del aspect ratio */
-    margin: auto; /* Centrar y añadir margen */
-    position: relative; /* Importante para la responsividad de Chart.js */
+    width: auto;
+    /* O un valor fijo como 600px */
+    max-width: 600px;
+    /* Límite superior */
+    height: 300px;
+    /* O déjalo en 'auto' si quieres que la altura dependa del aspect ratio */
+    margin: auto;
+    /* Centrar y añadir margen */
+    position: relative;
+    /* Importante para la responsividad de Chart.js */
 }
 
 .progress-bar {
     text-align: left;
-    font-size: 20px; /* Ajusta este valor según necesites */
+    font-size: 20px;
+    /* Ajusta este valor según necesites */
 }
