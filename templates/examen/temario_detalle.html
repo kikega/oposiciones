@@ -1,43 +1,66 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}{{ tema.titulo }} — Oposiciones GC{% endblock %}
 
 {% block container %}
-    
-    {% include "examen/header.html" %}
+{% include "examen/header.html" %}
 
-    <section class="mb-5 color-texto">
-        <div class="text-center">
-            <div class="container py-3">
-                <h1>Oposiciones<h1>
-                <h2 class="col-lg-8 mx-auto lead">
-                    Capitulos del tema {{ tema.titulo }}
-                </h2>
-            </div>
-        </div>
-    </section>
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'examen:temario' %}">Temario</a></li>
+        <li class="breadcrumb-item text-muted">{{ tema.bloque.titulo }}</li>
+        <li class="breadcrumb-item active color-texto" aria-current="page">{{ tema.titulo }}</li>
+    </ol>
+</nav>
 
-    <section class="album py-5">
-        <div class="container">
-            
-            <table class="table table-striped table-hover">
+<section class="mb-4 color-texto py-2">
+    <h1 class="fw-bold">{{ tema.titulo }}</h1>
+    <p class="text-muted">{{ tema.bloque.titulo }}</p>
+</section>
+
+<section class="mb-5">
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th>Número</th>
-                        <th>Título</th>
+                        <th style="width:60px;">#</th>
+                        <th>Capítulo</th>
+                        <th class="text-end">Documentación</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for capitulo in capitulos %}
-                        <tr>
-                            <td>{{ capitulo.orden }}</td>
-                            <td>{{ capitulo.titulo }}</td>
-                            <td><a href="{% url 'examen:descargar_capitulo' pk=capitulo.pk %}">Documentación</a></td>
-                        </tr>
+                    <tr>
+                        <td class="text-muted align-middle">{{ capitulo.orden }}</td>
+                        <td class="align-middle fw-semibold">{{ capitulo.titulo }}</td>
+                        <td class="text-end align-middle">
+                            {% if capitulo.documentacion %}
+                                <a href="{% url 'examen:descargar_capitulo' pk=capitulo.pk %}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i>Descargar PDF
+                                </a>
+                            {% else %}
+                                <span class="text-muted small"><i class="bi bi-file-earmark-x me-1"></i>Sin documento</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size:2rem;"></i>
+                            <p class="mt-2">No hay capítulos disponibles para este tema.</p>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            
         </div>
-    </section>
+    </div>
+</section>
 
-    {% endblock container %}
+<a href="{% url 'examen:temario' %}" class="btn btn-outline-secondary mb-4">
+    <i class="bi bi-arrow-left me-1"></i>Volver al temario
+</a>
+
+{% endblock container %}

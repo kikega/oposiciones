@@ -31,6 +31,7 @@ El usuario podrá subir sus propios temas y preguntas para ampliar el contenido 
     - Bootstrap 5
     - Gráficos con chart.js
 - Los requerimientos de librerias de la aplicación, está divididos en tres archivos, base.txt, desarrollo.txt y produccion.txt
+- La configuración de la aplicación, está dividida en tres archivos, base.py, desarrollo.py y produccion.py, por lo que settings.py será una carpeta que contenga los tres archivos de configuración y un archivo __init__.py que importe el archivo de configuración correspondiente a la variable de entorno DJANGO_SETTINGS_MODULE
 - La aplicación guarda logs de acceso y de consultas a la base de datos en 7 archivos rotatorios
 
 ## Estructura de datos
@@ -51,6 +52,7 @@ El usuario podrá subir sus propios temas y preguntas para ampliar el contenido 
 - La aplicacion debe tener una autenticacion de usuario y contraseña
 - La aplicacion debe tener una sesion de usuario y contraseña
 - El usuario se debe autenticar usando su correo electrónico, para lo que habrá que extender el modelo de usuario de django para que tenga un correo electronico y una contraseña.
+- El usuario podrá cambiar su contraseña cuando lo desee
 - Se deberar primar la seguridad de el sitio controlando en los formularios la entrada  de datos, para lo que se debera validar que los datos introducidos sean correctos y que no se introduzcan datos no validos.
 - Se debera implementar un sistema de autenticacion que permita al usuario acceder a su cuenta y que le permita gestionar sus datos.
 - Utiliza un archivo .env para guardar las variables de entorno, como por ejemplo la clave secreta de django, la configuracion de la base de datos, etc.

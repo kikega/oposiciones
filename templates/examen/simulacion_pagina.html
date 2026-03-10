@@ -1,70 +1,93 @@
 {% extends "base.html" %}
+{% load static examen_extras %}
+{% block title %}Simulacro #{{ examen.pk }} — Oposiciones GC{% endblock %}
 
 {% block container %}
-
 {% include "examen/header.html" %}
 
-<section class="mb-5 color-texto">
-    <div class="text-center">
-        <div class="container py-3">
-            <h1>Oposiciones<h1>
-            <h2 class="col-lg-8 mx-auto lead">
-                Simulación de exámen
-        </div>
-    </div>
+<section class="mb-4 color-texto text-center py-3">
+    <h1 class="fw-bold">Simulacro #{{ examen.pk }}</h1>
+    <p class="text-muted lead">Responde con calma. Puedes volver atrás si lo necesitas.</p>
 </section>
 
-<div class="container mt-4">
-    <div class="progress mb-4" style="height: 25px;">
-        <div class="progress-bar" role="progressbar" 
-             style="width: {% widthratio page_obj.start_index total_preguntas 100 %}%;" 
-             aria-valuenow="{{ page_obj.start_index }}" aria-valuemin="0" aria-valuemax="{{ total_preguntas }}">
-             Preguntas {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ total_preguntas }}
+<div class="mb-4">
+    <div class="d-flex justify-content-between small text-muted mb-1">
+        <span>Preguntas {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ total_preguntas }}</span>
+        <span>Página {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+    </div>
+    <div class="progress" style="height: 10px;">
+        <div class="progress-bar bg-primary"
+             role="progressbar"
+             style="width: {% widthratio page_obj.end_index total_preguntas 100 %}%"
+             aria-valuenow="{{ page_obj.end_index }}"
+             aria-valuemin="0"
+             aria-valuemax="{{ total_preguntas }}">
         </div>
     </div>
-
-    <h2>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</h2>
-    <hr>
-
-    <form method="post" action="{% url 'examen:simulacion_pagina' examen.id %}">
-        {% csrf_token %}
-        <input type="hidden" name="page_number" value="{{ page_obj.number }}">
-
-        {% for pregunta in page_obj %}
-        <div class="card mb-3">
-            <div class="card-header">
-                <strong>Pregunta {{ forloop.counter|add:page_obj.start_index|add:"-1" }}:</strong> 
-                {{ pregunta.enunciado|linebreaks }}
-            </div>
-            <div class="card-body">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_a" value="A">
-                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_a">a) {{ pregunta.respuesta_a }}</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_b" value="B">
-                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_b">b) {{ pregunta.respuesta_b }}</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_c" value="C">
-                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_c">c) {{ pregunta.respuesta_c }}</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="pregunta_{{ pregunta.id }}" id="pregunta_{{ pregunta.id }}_d" value="D">
-                    <label class="form-check-label" for="pregunta_{{ pregunta.id }}_d">d) {{ pregunta.respuesta_d }}</label>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-
-        <div class="d-grid gap-2">
-            {% if page_obj.has_next %}
-                <button type="submit" class="btn btn-info btn-lg">Siguiente Página</button>
-            {% else %}
-                <button type="submit" class="btn btn-success btn-lg">Finalizar y Ver Resultados</button>
-            {% endif %}
-        </div>
-    </form>
 </div>
 
+<form method="post" action="{% url 'examen:simulacion_pagina' examen.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="page_number" value="{{ page_obj.number }}">
+
+    {% for pregunta in page_obj %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex gap-2 align-items-start">
+            <span class="badge bg-primary rounded-pill mt-1 flex-shrink-0">
+                {{ forloop.counter|add:page_obj.start_index|add:"-1" }}
+            </span>
+            <p class="mb-0 fw-semibold">{{ pregunta.enunciado }}</p>
+        </div>
+        <div class="card-body">
+            {% for letra, texto in pregunta.todas_respuestas.items %}
+            <div class="form-check mb-2 ps-0">
+                <label class="d-flex align-items-start gap-2 w-100 p-2 rounded cursor-pointer op-radio-label
+                              {% if respuestas_guardadas|get_item:pregunta.id == letra %}border border-primary bg-primary bg-opacity-10{% endif %}"
+                       for="pregunta_{{ pregunta.id }}_{{ letra|lower }}"
+                       style="cursor:pointer; transition: background 0.15s;">
+                    <input class="form-check-input op-radio mt-1 flex-shrink-0"
+                           type="radio"
+                           name="pregunta_{{ pregunta.id }}"
+                           id="pregunta_{{ pregunta.id }}_{{ letra|lower }}"
+                           value="{{ letra }}"
+                           {% if respuestas_guardadas|get_item:pregunta.id == letra %}checked{% endif %}>
+                    <span><strong class="color-texto">{{ letra }})</strong> {{ texto }}</span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="d-grid gap-2 mb-5">
+        {% if page_obj.has_next %}
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-arrow-right-circle-fill me-2"></i>Siguiente página
+            </button>
+        {% else %}
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-check-circle-fill me-2"></i>Finalizar y ver resultados
+            </button>
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-house me-1"></i>Guardar y salir al inicio
+        </a>
+    </div>
+</form>
+
 {% endblock container %}
+
+{% block scripts %}
+<script>
+// Resaltar la opción seleccionada al hacer clic
+document.querySelectorAll('.op-radio').forEach(radio => {
+    radio.addEventListener('change', function () {
+        const name = this.name;
+        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+            r.closest('label').classList.remove('border', 'border-primary', 'bg-primary', 'bg-opacity-10');
+        });
+        this.closest('label').classList.add('border', 'border-primary', 'bg-primary', 'bg-opacity-10');
+    });
+});
+</script>
+{% endblock scripts %}

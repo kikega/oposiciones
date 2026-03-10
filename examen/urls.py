@@ -19,4 +19,5 @@ urlpatterns = [
     # URL para ver los resultados finales
     path('simulacion/<int:examen_id>/resultados/', examen_views.ResultadosView.as_view(), name='simulacion_resultados'),
     path("error/<int:error_code>/", examen_views.ErrorView.as_view(), name="errores"),
+    # El mensaje de error se pasa como query param: ?mensaje=...
 ]

@@ -1,77 +1,117 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}Resultados Examen #{{ examen.pk }} — Oposiciones GC{% endblock %}
 
 {% block container %}
-
 {% include "examen/header.html" %}
 
-<section class="mb-5 color-texto">
-    <div class="text-center">
-        <div class="container py-3">
-            <h1>Oposiciones<h1>
-            <h2 class="col-lg-8 mx-auto lead">
-                Resultados de la simulación de exámen
-        </div>
-    </div>
+<section class="mb-4 color-texto text-center py-3">
+    <h1 class="fw-bold">Resultados del Simulacro #{{ examen.pk }}</h1>
+    <p class="text-muted">{{ examen.fecha_finalizacion|date:"d/m/Y \a \l\a\s H:i" }}</p>
 </section>
 
-<div class="container mt-4">
-    <div class="card text-center">
+{# ── Puntuación destacada ── #}
+<div class="row justify-content-center mb-5">
+    <div class="col-md-4 text-center">
+        <div class="card shadow">
+            <div class="card-body py-4">
+                <p class="text-muted mb-1">Puntuación Final</p>
+                <h2 class="display-4 fw-bold
+                    {% if examen.puntuacion >= 70 %}text-success
+                    {% elif examen.puntuacion >= 50 %}text-warning
+                    {% else %}text-danger{% endif %}">
+                    {{ examen.puntuacion|floatformat:2 }}
+                </h2>
+                <small class="text-muted">{{ examen.porcentaje_acierto }}% de acierto</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ── KPI: aciertos / errores / sin contestar ── #}
+<div class="row mb-5 gy-3">
+    <div class="col-md-4">
+        <div class="card kpi-card border-success h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
+                <p class="kpi-label mt-2">Aciertos</p>
+                <p class="kpi-value text-success">{{ aciertos }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card kpi-card border-danger h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-x-circle-fill text-danger" style="font-size: 2rem;"></i>
+                <p class="kpi-label mt-2">Errores</p>
+                <p class="kpi-value text-danger">{{ errores }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card kpi-card border-warning h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-dash-circle-fill text-warning" style="font-size: 2rem;"></i>
+                <p class="kpi-label mt-2">Sin contestar</p>
+                <p class="kpi-value text-warning">{{ sin_contestar }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ── Revisión de preguntas falladas ── #}
+{% if preguntas_falladas %}
+<section>
+    <h4 class="fw-bold mb-4 color-texto">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>Preguntas que debes repasar
+    </h4>
+    {% for respuesta in preguntas_falladas %}
+    <div class="card mb-4 shadow-sm">
         <div class="card-header">
-            <h3>Resultados del Examen</h3>
+            <small class="text-muted">
+                <i class="bi bi-bookmark"></i>
+                {% if respuesta.pregunta.articulo.capitulo %}
+                    Capítulo: {{ respuesta.pregunta.articulo.capitulo.titulo }}
+                {% endif %}
+            </small>
         </div>
         <div class="card-body">
-            <h1 class="card-title">Puntuación Final: {{ examen.puntuacion|floatformat:2 }}</h1>
-            <p class="card-text">Examen realizado el {{ examen.fecha_finalizacion|date:"d/m/Y \a \l\a\s H:i" }}</p>
-            
-            <div class="row mt-4">
-                <div class="col-md-4">
-                    <div class="alert alert-success"><h4>Aciertos: {{ aciertos }}</h4></div>
-                </div>
-                <div class="col-md-4">
-                    <div class="alert alert-danger"><h4>Errores: {{ errores }}</h4></div>
-                </div>
-                <div class="col-md-4">
-                    <div class="alert alert-warning"><h4>Sin contestar: {{ sin_contestar }}</h4></div>
-                </div>
+            <p class="fw-semibold mb-3">{{ respuesta.pregunta.enunciado }}</p>
+            <p class="text-danger mb-1">
+                <strong><i class="bi bi-x-circle me-1"></i>Tu respuesta ({{ respuesta.respuesta_seleccionada }}):</strong>
+                {{ respuesta.texto_respuesta_seleccionada }}
+            </p>
+            <p class="text-success mb-0">
+                <strong><i class="bi bi-check-circle me-1"></i>Respuesta correcta ({{ respuesta.pregunta.respuesta_correcta }}):</strong>
+                {{ respuesta.pregunta.texto_respuesta_correcta }}
+            </p>
+            {% if respuesta.pregunta.explicacion %}
+            <div class="alert alert-info mt-3 mb-0">
+                <i class="bi bi-info-circle me-1"></i>
+                <strong>Explicación:</strong> {{ respuesta.pregunta.explicacion }}
             </div>
+            {% endif %}
         </div>
     </div>
+    {% endfor %}
+</section>
+{% else %}
+<div class="text-center text-muted py-4">
+    <i class="bi bi-emoji-smile" style="font-size: 3rem;"></i>
+    <p class="mt-2">¡Sin preguntas falladas! Excelente trabajo.</p>
+</div>
+{% endif %}
 
-    {% if preguntas_falladas %}
-    <div class="mt-5">
-        <h2>Revisión de Preguntas Falladas</h2>
-        <hr>
-        {% for respuesta in preguntas_falladas %}
-        <div class="card mb-3">
-            <div class="card-header">
-                <strong>Pregunta del capítulo:</strong> {{ respuesta.pregunta.capitulo.titulo }}
-            </div>
-            <div class="card-body">
-                <p><strong>Enunciado:</strong> {{ respuesta.pregunta.enunciado|linebreaks }}</p>
-                <p class="text-danger"><strong>Tu respuesta ({{ respuesta.respuesta_seleccionada }}):</strong>
-                    {% if respuesta.respuesta_seleccionada == 'A' %}{{ respuesta.pregunta.respuesta_a }}{% endif %}
-                    {% if respuesta.respuesta_seleccionada == 'B' %}{{ respuesta.pregunta.respuesta_b }}{% endif %}
-                    {% if respuesta.respuesta_seleccionada == 'C' %}{{ respuesta.pregunta.respuesta_c }}{% endif %}
-                    {% if respuesta.respuesta_seleccionada == 'D' %}{{ respuesta.pregunta.respuesta_d }}{% endif %}
-                </p>
-                <p class="text-success"><strong>Respuesta correcta ({{ respuesta.pregunta.respuesta_correcta }}):</strong>
-                    {{ respuesta.pregunta.texto_respuesta_correcta }}
-                </p>
-                {% if respuesta.pregunta.explicacion %}
-                <div class="alert alert-info">
-                    <strong>Explicación:</strong> {{ respuesta.pregunta.explicacion|linebreaks }}
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <div class="text-center mt-4">
-        <a href="{% url 'home' %}" class="btn btn-secondary">Volver al Inicio</a>
-    </div>
+<div class="d-flex gap-3 justify-content-center mt-5 mb-3">
+    <a href="{% url 'home' %}" class="btn btn-secondary">
+        <i class="bi bi-house me-1"></i>Volver al inicio
+    </a>
+    <form action="{% url 'examen:simular_examen' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-arrow-repeat me-1"></i>Nuevo simulacro
+        </button>
+    </form>
 </div>
 
 {% endblock container %}
