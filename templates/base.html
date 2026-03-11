@@ -1,53 +1,141 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="dark">
+<html lang="es">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Aplicación de preparación de oposiciones tipo test.">
-        <title>{% block title %}Oposiciones GC{% endblock %}</title>
+        <title>{% block title %}OpoPrep{% endblock %}</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
               rel="stylesheet"
               integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
               crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
         <link rel="icon"
               href="{% static 'img/favicon.png' %}"
               sizes="25x25"
               type="image/png">
         <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-        <link rel="stylesheet"
               href="https://cdn.datatables.net/2.3.0/css/dataTables.dataTables.css">
         {% if request.resolver_match.url_name == "login" %}
-            <link rel="stylesheet" href="{% static 'css/op-login.css' %}">
+            <link rel="stylesheet" href="{% static 'css/op-login.css' %}?v=2">
         {% else %}
-            <link rel="stylesheet" href="{% static 'css/oposiciones.css' %}">
+            <link rel="stylesheet" href="{% static 'css/oposiciones.css' %}?v=2">
         {% endif %}
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+        {% block extra_head %}{% endblock extra_head %}
     </head>
 
     {% if request.resolver_match.url_name == "login" %}
         <body class="d-flex align-items-center py-4 bg-body-tertiary">
+            <main class="container">
     {% else %}
-        <body class="d-flex flex-column min-vh-100">
+        <body>
+            <div class="layout-wrapper">
+                <!-- Sidebar Lateral (Por Defecto) -->
+                {% block sidebar %}
+                <aside class="sidebar position-fixed">
+                    <div class="sidebar-header">
+                        <div class="logo-icon">
+                            <span class="material-symbols-outlined">school</span>
+                        </div>
+                        <div>
+                            <h5 class="mb-0 fw-bold text-primary-custom">OpoPrep</h5>
+                            {% if request.user.is_authenticated and request.user.perfil %}
+                            <div class="dropdown mt-1">
+                                <a class="btn btn-sm btn-outline-secondary dropdown-toggle d-block py-0 text-start" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.8rem; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    {{ request.user.perfil.oposicion_activa|default:"Sin Oposición" }}
+                                </a>
+                                <ul class="dropdown-menu shadow">
+                                    {% for op in request.user.perfil.oposiciones_inscritas.all %}
+                                    <li>
+                                        <form action="{% url 'examen:seleccionar_oposicion' op.id %}" method="post" class="m-0">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="next" value="{{ request.path }}">
+                                            <button type="submit" class="dropdown-item {% if op == request.user.perfil.oposicion_activa %}active{% endif %}" style="font-size: 0.85rem;">{{ op.nombre }}</button>
+                                        </form>
+                                    </li>
+                                    {% empty %}
+                                    <li><span class="dropdown-item text-muted" style="font-size: 0.85rem;">No hay oposiciones</span></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% else %}
+                            <small class="text-muted">Panel de Control</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <nav class="nav flex-column mt-3 flex-grow-1">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <span class="material-symbols-outlined">dashboard</span> Dashboard
+                        </a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'temario' or 'temario' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'examen:temario' %}">
+                            <span class="material-symbols-outlined">menu_book</span> Teoría / Temario
+                        </a>
+                        <!-- Mock Links for other areas -->
+                        <a class="nav-link" href="#">
+                            <span class="material-symbols-outlined">quiz</span> Tests
+                        </a>
+                        <a class="nav-link" href="#">
+                            <span class="material-symbols-outlined">history</span> Repaso
+                        </a>
+                        <a class="nav-link" href="#">
+                            <span class="material-symbols-outlined">analytics</span> Estadísticas
+                        </a>
+                    </nav>
+
+                    <div class="user-profile">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="flex-grow-1 overflow-hidden">
+                                <p class="mb-0 fw-semibold text-truncate">{{ user.email|default:"Usuario" }}</p>
+                                <small class="text-muted text-truncate">Plan Opositor</small>
+                            </div>
+                            <div class="dropdown">
+                                <span class="material-symbols-outlined text-muted" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">settings</span>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                    <li><a class="dropdown-item d-flex align-items-center gap-2" href="#modalCambiocontraseña" data-bs-toggle="modal"><span class="material-symbols-outlined fs-6">key</span> Cambiar contraseña</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                                                <span class="material-symbols-outlined fs-6">logout</span> Cerrar Sesión
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+                {% endblock sidebar %}
+
+                <!-- Contenido Principal -->
+                <main class="main-content">
+                    {% if messages %}
+                        <div class="mb-3">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
     {% endif %}
 
-        <main class="container mt-5 mb-5 {% if request.resolver_match.url_name != 'login' %}flex-grow-1{% endif %}">
-            {% if messages %}
-                <div class="mb-3">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+                    {% block container %}{% endblock container %}
 
-            {% block container %}{% endblock container %}
+    {% if request.resolver_match.url_name != "login" %}
+                </main>
+            </div>
+    {% else %}
+            </main>
+    {% endif %}
 
-            {# Modal cambio de contraseña: solo visible para usuarios autenticados y fuera del login #}
+            {# Modal cambio de contraseña #}
             {% if user.is_authenticated and request.resolver_match.url_name != "login" %}
             <div class="modal fade"
                  id="modalCambiocontraseña"
@@ -55,13 +143,13 @@
                  aria-labelledby="modalCambiocontraseñaLabel"
                  aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5 color-texto" id="modalCambiocontraseñaLabel">Cambio de contraseña</h1>
+                    <div class="modal-content border-0 shadow">
+                        <div class="modal-header border-bottom-0 pb-0">
+                            <h1 class="modal-title fs-5 fw-bold text-primary-custom" id="modalCambiocontraseñaLabel">Cambio de contraseña</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
-                            <p class="text-muted small text-center mb-3">Usuario: <strong>{{ user.email }}</strong></p>
+                            <p class="text-muted small text-center mb-4">Usuario: <strong>{{ user.email }}</strong></p>
                             <form action="{% url 'cambio_password' %}" method="post" id="cambioPassword">
                                 {% csrf_token %}
                                 <div class="form-floating mb-3">
@@ -70,21 +158,21 @@
                                     <label for="oldPassword">Contraseña actual</label>
                                 </div>
                                 <div class="input-group mb-3">
-                                    <button class="input-group-text view-password" data-target="newPassword" type="button">
-                                        <i class="bi bi-eye-slash-fill" id="icono1"></i>
+                                    <button class="input-group-text bg-white border-end-0 view-password" data-target="newPassword" type="button">
+                                        <span class="material-symbols-outlined text-muted" id="icono1">visibility_off</span>
                                     </button>
-                                    <div class="form-floating">
-                                        <input type="password" class="form-control" name="new_password"
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="password" class="form-control border-start-0" name="new_password"
                                                id="newPassword" placeholder="Nueva contraseña">
                                         <label for="newPassword">Nueva contraseña</label>
                                     </div>
                                 </div>
                                 <div class="input-group mb-3">
-                                    <button class="input-group-text view-password" data-target="newPasswordConf" type="button">
-                                        <i class="bi bi-eye-slash-fill" id="icono2"></i>
+                                    <button class="input-group-text bg-white border-end-0 view-password" data-target="newPasswordConf" type="button">
+                                        <span class="material-symbols-outlined text-muted" id="icono2">visibility_off</span>
                                     </button>
-                                    <div class="form-floating">
-                                        <input type="password" class="form-control" name="new_password_conf"
+                                    <div class="form-floating flex-grow-1">
+                                        <input type="password" class="form-control border-start-0" name="new_password_conf"
                                                id="newPasswordConf" placeholder="Confirmar contraseña">
                                         <label for="newPasswordConf">Confirmar contraseña</label>
                                     </div>
@@ -94,23 +182,14 @@
                                 Las contraseñas no coinciden
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" form="cambioPassword" class="btn btn-primary">Guardar cambios</button>
+                        <div class="modal-footer border-top-0 pt-0">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" form="cambioPassword" class="btn btn-primary-custom">Guardar cambios</button>
                         </div>
                     </div>
                 </div>
             </div>
             {% endif %}
-        </main>
-
-        {% if request.resolver_match.url_name != "login" %}
-        <footer class="footer py-4 mt-5 bg-body-tertiary">
-            <div class="container text-center">
-                <img src="{% static 'img/logo2.png' %}" alt="Logo" width="137" height="40">
-            </div>
-        </footer>
-        {% endif %}
 
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

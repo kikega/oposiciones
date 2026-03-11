@@ -1,41 +1,32 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}Error — OpoPrep{% endblock %}
 
 {% block container %}
-    
-    {% include "examen/header.html" %}
-
-    <section class="mb-5 color-texto">
-        <div class="text-center">
-            <div class="container py-3">
-                <h1>Oposiciones<h1>
-                <h2 class="col-lg-8 mx-auto lead">
-                    Capitulos del tema {{ tema.titulo }}
-                </h2>
+<div class="d-flex align-items-center justify-content-center h-100 py-5">
+    <div class="text-center w-100">
+        <span class="material-symbols-outlined text-danger mb-4" style="font-size: 6rem;">error</span>
+        <h1 class="display-4 fw-bold mb-3" style="color: var(--primary-dark);">Se ha producido un error</h1>
+        <p class="lead text-muted mb-5">Lo sentimos, no hemos podido procesar tu solicitud.</p>
+        
+        <div class="card border-0 shadow-sm mx-auto mb-5 text-start" style="max-width: 600px;">
+            <div class="card-body p-4 p-md-5">
+                <h5 class="fw-bold text-danger mb-3 d-flex align-items-center gap-2">
+                    <span class="material-symbols-outlined fs-5">warning</span>
+                    Código de Error {{ error_code }}
+                </h5>
+                <p class="text-secondary mb-0 p-3 bg-light rounded text-break font-monospace small">
+                    {{ error_message|default:"Error inesperado del servidor. Inténtalo de nuevo más tarde." }}
+                </p>
             </div>
         </div>
-    </section>
-
-    <h1 class="text-center mb-5 color-texto">Se ha producido un error</h1>
-
-    <section class="album py-5">
-        <div class="d-flex justify-content-center mt-5 mb-5">
-            <div class="card mb-3" style="max-width: 800px;">
-                <div class="row g-0">
-                  <div class="col-md-8">
-                    <div class="card-body">
-                      <h5 class="card-title color-texto">Error de procesamiento {{ error_code}}</h5>
-                      <p class="card-text">Se ha producido un error inesperado al procesar la solicitud. Por favor, vuelvalo a intentar.</p>
-                      <p class="card-text">Descripción del error: {{ error_message }}.</p>
-                    </div>
-                  </div>
-                </div>
-            </div>
-        </div>
-        <div class="d-flex justify-content-center">
-            <a class="btn btn-outline-warning" onclick="history.back()"><i class="bi bi-arrow-left"></i> Volver atrás</a>
-        </div>
-    </section>
-
-
-    {% endblock container %}
+        
+        <button class="btn btn-outline-secondary px-4 py-2 fw-bold d-inline-flex align-items-center gap-2" onclick="history.back()">
+            <span class="material-symbols-outlined">arrow_back</span> Volver atrás
+        </button>
+        <a href="{% url 'home' %}" class="btn btn-primary-custom px-4 py-2 fw-bold d-inline-flex align-items-center gap-2 ms-2">
+            <span class="material-symbols-outlined">home</span> Ir a Inicio
+        </a>
+    </div>
+</div>
+{% endblock container %}

@@ -1,22 +1,117 @@
 {% extends "base.html" %}
 {% load static examen_extras %}
-{% block title %}Simulacro #{{ examen.pk }} — Oposiciones GC{% endblock %}
+{% block title %}Simulacro #{{ examen.pk }} — OpoPrep{% endblock %}
+
+{% block extra_head %}
+<style>
+.option-letter {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    margin-right: 15px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+.op-radio-label {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+.op-radio-label.active {
+    background-color: rgba(13, 76, 131, 0.05);
+    border-color: var(--primary-color);
+}
+.op-radio-label.active .option-letter {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+.op-radio {
+    display: none;
+}
+.sidebar-simulacro {
+    width: var(--sidebar-width);
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #f8f9fa;
+    border-right: 1px solid #e2e8f0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+.question-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 8px;
+}
+</style>
+{% endblock extra_head %}
+
+{% block sidebar %}
+<aside class="sidebar-simulacro">
+    <div class="p-4 border-bottom bg-white">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-primary-custom text-white p-2 rounded d-flex align-items-center justify-content-center">
+                <span class="material-symbols-outlined fs-4">menu_book</span>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold">Simulacro #{{ examen.pk }}</h6>
+                <small class="text-muted text-truncate" style="max-width: 150px; display:inline-block;">{{ examen.get_tipo_display }}</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="p-4 bg-light border-bottom flex-grow-1 overflow-y-auto">
+        <h6 class="mb-3 fw-bold d-flex align-items-center gap-2 small text-muted text-uppercase">
+            <span class="material-symbols-outlined fs-6">grid_view</span> Navegación de Páginas
+        </h6>
+        <div class="question-nav-grid mt-3">
+            {% for i in "x"|ljust:page_obj.paginator.num_pages %}
+            <button type="button" class="btn {% if forloop.counter == page_obj.number %}btn-primary-custom shadow border-3{% else %}btn-outline-primary{% endif %} btn-sm py-2" onclick="goToPage({{ forloop.counter }});">
+                {{ forloop.counter }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+</aside>
+{% endblock sidebar %}
 
 {% block container %}
-{% include "examen/header.html" %}
-
-<section class="mb-4 color-texto text-center py-3">
-    <h1 class="fw-bold">Simulacro #{{ examen.pk }}</h1>
-    <p class="text-muted lead">Responde con calma. Puedes volver atrás si lo necesitas.</p>
-</section>
-
-<div class="mb-4">
-    <div class="d-flex justify-content-between small text-muted mb-1">
-        <span>Preguntas {{ page_obj.start_index }}–{{ page_obj.end_index }} de {{ total_preguntas }}</span>
-        <span>Página {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+<header class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><span class="badge bg-primary-custom px-3 py-2 fs-6">PREGUNTAS {{ page_obj.start_index }} - {{ page_obj.end_index }} DE {{ total_preguntas }}</span></li>
+            </ol>
+        </nav>
+        <p class="text-muted mb-0">Revisa con cuidado cada pregunta.</p>
     </div>
-    <div class="progress" style="height: 10px;">
-        <div class="progress-bar bg-primary"
+    <div class="d-flex align-items-center gap-3">
+        <div class="d-flex align-items-center bg-white px-3 py-2 rounded border shadow-sm">
+            <span class="material-symbols-outlined text-primary-custom me-2">schedule</span>
+            <span class="fw-bold font-monospace text-primary-custom fs-5" id="timer">--:--</span>
+        </div>
+        <form method="post" action="{% url 'examen:simulacion_resultados' examen.pk %}" class="d-inline" id="formFinalizar" onsubmit="return confirm('¿Estás seguro de finalizar el examen?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2 fw-bold">
+                <span>Finalizar Examen</span>
+                <span class="material-symbols-outlined">send</span>
+            </button>
+        </form>
+    </div>
+</header>
+
+<div class="mb-5 bg-white p-3 rounded border shadow-sm d-flex align-items-center gap-3">
+    <span class="small fw-bold text-muted text-nowrap">PROGRESO GENERAL:</span>
+    <div class="progress flex-grow-1" style="height: 10px;">
+        <div class="progress-bar bg-primary-custom"
              role="progressbar"
              style="width: {% widthratio page_obj.end_index total_preguntas 100 %}%"
              aria-valuenow="{{ page_obj.end_index }}"
@@ -24,54 +119,67 @@
              aria-valuemax="{{ total_preguntas }}">
         </div>
     </div>
+    <span class="small fw-bold text-primary-custom">{% widthratio page_obj.end_index total_preguntas 100 %}%</span>
 </div>
 
-<form method="post" action="{% url 'examen:simulacion_pagina' examen.id %}">
+<form method="post" action="{% url 'examen:simulacion_pagina' examen.id %}" id="mainSimulacionForm">
     {% csrf_token %}
-    <input type="hidden" name="page_number" value="{{ page_obj.number }}">
+    <input type="hidden" name="page_number" id="id_page_number" value="{{ page_obj.number }}">
 
     {% for pregunta in page_obj %}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header d-flex gap-2 align-items-start">
-            <span class="badge bg-primary rounded-pill mt-1 flex-shrink-0">
-                {{ forloop.counter|add:page_obj.start_index|add:"-1" }}
-            </span>
-            <p class="mb-0 fw-semibold">{{ pregunta.enunciado }}</p>
-        </div>
-        <div class="card-body">
-            {% for letra, texto in pregunta.todas_respuestas.items %}
-            <div class="form-check mb-2 ps-0">
-                <label class="d-flex align-items-start gap-2 w-100 p-2 rounded cursor-pointer op-radio-label
-                              {% if respuestas_guardadas|get_item:pregunta.id == letra %}border border-primary bg-primary bg-opacity-10{% endif %}"
-                       for="pregunta_{{ pregunta.id }}_{{ letra|lower }}"
-                       style="cursor:pointer; transition: background 0.15s;">
-                    <input class="form-check-input op-radio mt-1 flex-shrink-0"
+    <div class="card mb-5 border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+            <h4 class="fw-bold mb-5 lh-base d-flex gap-3">
+                <span class="text-primary-custom">{{ forloop.counter|add:page_obj.start_index|add:"-1" }}.</span>
+                <span>{{ pregunta.enunciado }}</span>
+            </h4>
+            
+            <div class="list-group">
+                {% for letra, texto in pregunta.todas_respuestas.items %}
+                <label class="list-group-item list-group-item-action p-4 d-flex align-items-center mb-3 rounded border shadow-sm op-radio-label {% if respuestas_guardadas|get_item:pregunta.id == letra %}active{% endif %}"
+                       for="pregunta_{{ pregunta.id }}_{{ letra|lower }}">
+                    <input class="op-radio"
                            type="radio"
                            name="pregunta_{{ pregunta.id }}"
                            id="pregunta_{{ pregunta.id }}_{{ letra|lower }}"
                            value="{{ letra }}"
                            {% if respuestas_guardadas|get_item:pregunta.id == letra %}checked{% endif %}>
-                    <span><strong class="color-texto">{{ letra }})</strong> {{ texto }}</span>
+                    <span class="option-letter">{{ letra }}</span>
+                    <div class="flex-grow-1 fs-6 fw-medium text-secondary" style="line-height: 1.6;">{{ texto }}</div>
+                    {% if respuestas_guardadas|get_item:pregunta.id == letra %}
+                    <span class="material-symbols-outlined text-primary-custom fs-3 check-icon border-0">check_circle</span>
+                    {% else %}
+                    <span class="material-symbols-outlined text-transparent fs-3 check-icon border-0" style="color: transparent;">check_circle</span>
+                    {% endif %}
                 </label>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
     {% endfor %}
 
-    <div class="d-grid gap-2 mb-5">
-        {% if page_obj.has_next %}
-            <button type="submit" class="btn btn-primary btn-lg">
-                <i class="bi bi-arrow-right-circle-fill me-2"></i>Siguiente página
+    <div class="d-flex justify-content-between align-items-center bg-white p-4 rounded border shadow-sm mb-5">
+        {% if page_obj.has_previous %}
+            <button type="button" class="btn btn-outline-secondary px-4 py-2 fw-bold d-flex align-items-center gap-2" onclick="goToPage('{{ page_obj.previous_page_number }}');">
+                <span class="material-symbols-outlined">chevron_left</span> Anterior
             </button>
         {% else %}
-            <button type="submit" class="btn btn-success btn-lg">
-                <i class="bi bi-check-circle-fill me-2"></i>Finalizar y ver resultados
+            <div></div> <!-- placeholder -->
+        {% endif %}
+        
+        <div class="d-flex gap-2">
+            <a href="{% url 'home' %}" class="btn btn-light px-4 py-2 fw-bold text-muted border">Guardar y Salir</a>
+        </div>
+        
+        {% if page_obj.has_next %}
+            <button type="submit" class="btn btn-primary-custom px-5 py-2 fw-bold d-flex align-items-center gap-2" onclick="document.getElementById('id_page_number').value='{{ page_obj.next_page_number }}';">
+                Siguiente <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        {% else %}
+            <button type="button" class="btn btn-success px-5 py-2 fw-bold d-flex align-items-center gap-2" onclick="document.getElementById('formFinalizar').submit();">
+                Finalizar <span class="material-symbols-outlined">done_all</span>
             </button>
         {% endif %}
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary">
-            <i class="bi bi-house me-1"></i>Guardar y salir al inicio
-        </a>
     </div>
 </form>
 
@@ -79,14 +187,30 @@
 
 {% block scripts %}
 <script>
-// Resaltar la opción seleccionada al hacer clic
+function goToPage(pageNum) {
+    document.getElementById('id_page_number').value = pageNum;
+    document.getElementById('mainSimulacionForm').submit();
+}
+
 document.querySelectorAll('.op-radio').forEach(radio => {
     radio.addEventListener('change', function () {
         const name = this.name;
         document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-            r.closest('label').classList.remove('border', 'border-primary', 'bg-primary', 'bg-opacity-10');
+            const label = r.closest('label');
+            label.classList.remove('active');
+            const icon = label.querySelector('.check-icon');
+            if(icon) {
+                icon.style.color = 'transparent';
+                icon.classList.remove('text-primary-custom');
+            }
         });
-        this.closest('label').classList.add('border', 'border-primary', 'bg-primary', 'bg-opacity-10');
+        const activeLabel = this.closest('label');
+        activeLabel.classList.add('active');
+        const activeIcon = activeLabel.querySelector('.check-icon');
+        if(activeIcon) {
+            activeIcon.style.color = '';
+            activeIcon.classList.add('text-primary-custom');
+        }
     });
 });
 </script>

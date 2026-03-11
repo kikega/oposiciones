@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 # --- Modelos para el Temario ---
@@ -34,42 +36,36 @@ class Oposicion(models.Model):
     def __str__(self):
         return self.nombre
 
-
-class Bloque(models.Model):
-    """Bloque temático de una oposición. Ej: 'Bloque I: Derecho Constitucional'."""
-
-    oposicion = models.ForeignKey(
-        Oposicion, on_delete=models.CASCADE, related_name='bloques',
-        verbose_name=_("oposición"), null=True, blank=True,
-        help_text=_("Oposición a la que pertenece este bloque.")
-    )
-    titulo = models.CharField(
-        _("título del bloque"), max_length=255, unique=True,
-    )
-    orden = models.PositiveIntegerField(
-        _("orden"), default=0, db_index=True,
-        help_text=_("Número para ordenar la lista de bloques.")
-    )
-
-    class Meta:
-        verbose_name = _("bloque")
-        verbose_name_plural = _("bloques")
-        ordering = ['orden', 'titulo']
+class PerfilUsuario(models.Model):
+    """Perfil extendido del usuario para almacenar su matrícula y oposiciones activas."""
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='perfil')
+    oposiciones_inscritas = models.ManyToManyField(Oposicion, related_name='alumnos', blank=True)
+    oposicion_activa = models.ForeignKey(Oposicion, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuarios_activos')
 
     def __str__(self):
-        return self.titulo
+        return f"Perfil de {self.usuario.email}"
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def crear_perfil_usuario(sender, instance, created, **kwargs):
+    if created:
+        PerfilUsuario.objects.create(usuario=instance)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def guardar_perfil_usuario(sender, instance, **kwargs):
+    if hasattr(instance, 'perfil'):
+        instance.perfil.save()
 
 
 class Tema(models.Model):
-    """Tema dentro de un bloque. Ej: 'Tema 1: La Constitución Española de 1978'."""
+    """Tema de estudio transversal que puede pertenecer a múltiples oposiciones. Ej: 'Tema 1: La Constitución Española de 1978'."""
 
-    bloque = models.ForeignKey(
-        Bloque, on_delete=models.CASCADE, related_name='temasBloque',
-        verbose_name=_("bloque"), help_text=_("Bloque al que pertenece este tema.")
+    oposiciones = models.ManyToManyField(
+        Oposicion, related_name='temas',
+        verbose_name=_("oposiciones"), help_text=_("Oposiciones a las que pertenece este tema.")
     )
     orden = models.PositiveIntegerField(
         _("orden"), default=0,
-        help_text=_("Número para ordenar los temas dentro de un mismo bloque.")
+        help_text=_("Número para ordenar los temas (referencial, ya que puede variar por oposición).")
     )
     titulo = models.CharField(
         _("título del tema"), max_length=255,
@@ -83,11 +79,10 @@ class Tema(models.Model):
     class Meta:
         verbose_name = _("tema")
         verbose_name_plural = _("temas")
-        unique_together = ('bloque', 'titulo')
-        ordering = ['bloque', 'orden', 'titulo']
+        ordering = ['orden', 'titulo']
 
     def __str__(self):
-        return f"{self.bloque.titulo}: {self.titulo}"
+        return self.titulo
 
 
 class Capitulo(models.Model):
@@ -132,10 +127,7 @@ class Articulo(models.Model):
         Capitulo, on_delete=models.CASCADE, related_name='articulosCapitulo',
         verbose_name=_('capítulo'), help_text=_("Capítulo al que pertenece este artículo.")
     )
-    titulo = models.CharField(
-        _("título del artículo"), max_length=255,
-        help_text=_("Título del artículo.")
-    )
+
     contenido = models.TextField(
         _("contenido del artículo"),
         help_text=_("Contenido completo del artículo. Admite Markdown.")
@@ -148,11 +140,41 @@ class Articulo(models.Model):
     class Meta:
         verbose_name = _("artículo")
         verbose_name_plural = _("artículos")
-        unique_together = [('capitulo', 'numero'), ('capitulo', 'titulo')]
+        unique_together = [('capitulo', 'numero')]
         ordering = ['capitulo', 'numero']
 
     def __str__(self):
-        return self.titulo
+        return f"Art. {self.numero} - {self.capitulo.titulo}"
+
+
+# --- Modelo para Notas de Estudio ---
+
+class NotaEstudio(models.Model):
+    """Notas privadas de un usuario para un capítulo específico."""
+    
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='notas_estudio', verbose_name=_("usuario")
+    )
+    capitulo = models.ForeignKey(
+        Capitulo, on_delete=models.CASCADE, related_name='notas',
+        verbose_name=_("capítulo")
+    )
+    contenido = models.TextField(
+        _("contenido"), blank=True,
+        help_text=_("Tus apuntes personales sobre este capítulo.")
+    )
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("nota de estudio")
+        verbose_name_plural = _("notas de estudio")
+        unique_together = ('usuario', 'capitulo')
+        ordering = ['-fecha_actualizacion']
+
+    def __str__(self):
+        return f"Notas de {self.usuario.email} - {self.capitulo}"
 
 
 # --- Modelo para las Preguntas ---
@@ -233,6 +255,7 @@ class Examen(models.Model):
         SIMULACRO = 'SIMULACRO', _('Simulacro general')
         REPASO = 'REPASO', _('Repaso de errores')
         TEMA = 'TEMA', _('Por tema específico')
+        CAPITULO = 'CAPITULO', _('Por capítulo específico')
 
     usuario = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE,

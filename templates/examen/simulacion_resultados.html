@@ -1,59 +1,100 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Resultados Examen #{{ examen.pk }} — Oposiciones GC{% endblock %}
+{% block title %}Resultados Examen #{{ examen.pk }} — OpoPrep{% endblock %}
+
+{% block extra_head %}
+<style>
+.answer-box {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    height: 100%;
+}
+.wrong-answer {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc3545;
+}
+.correct-answer {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #198754;
+}
+.explanation-section {
+    background-color: #f1f5f9;
+    border-left: 4px solid var(--primary-color);
+    padding: 1.25rem;
+    border-radius: 0.5rem;
+}
+</style>
+{% endblock extra_head %}
 
 {% block container %}
-{% include "examen/header.html" %}
-
-<section class="mb-4 color-texto text-center py-3">
-    <h1 class="fw-bold">Resultados del Simulacro #{{ examen.pk }}</h1>
-    <p class="text-muted">{{ examen.fecha_finalizacion|date:"d/m/Y \a \l\a\s H:i" }}</p>
-</section>
+<header class="d-flex justify-content-between align-items-center mb-5 bg-white p-4 rounded-3 border shadow-sm mt-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1">Resultados del Simulacro #{{ examen.pk }}</h1>
+        <p class="text-muted small mb-0">Completado el {{ examen.fecha_finalizacion|date:"d M Y, H:i" }}</p>
+    </div>
+    <div class="d-flex gap-3 align-items-center">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined">dashboard</span> Volver al inicio
+        </a>
+        <form action="{% url 'examen:simular_examen' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary-custom d-flex align-items-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined fs-5">replay</span> Nuevo simulacro
+            </button>
+        </form>
+    </div>
+</header>
 
 {# ── Puntuación destacada ── #}
-<div class="row justify-content-center mb-5">
-    <div class="col-md-4 text-center">
-        <div class="card shadow">
-            <div class="card-body py-4">
-                <p class="text-muted mb-1">Puntuación Final</p>
-                <h2 class="display-4 fw-bold
+<div class="row mb-5 gy-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100 border-0">
+            <div class="card-body py-4 d-flex flex-column justify-content-center align-items-center text-center">
+                <p class="text-muted fw-bold mb-2 text-uppercase letter-spacing-1">Puntuación Final</p>
+                <h2 class="display-3 fw-bold mb-2
                     {% if examen.puntuacion >= 70 %}text-success
                     {% elif examen.puntuacion >= 50 %}text-warning
                     {% else %}text-danger{% endif %}">
-                    {{ examen.puntuacion|floatformat:2 }}
+                    {{ examen.puntuacion|floatformat:2 }}<span class="fs-4 text-muted">/100</span>
                 </h2>
-                <small class="text-muted">{{ examen.porcentaje_acierto }}% de acierto</small>
+                <div class="progress w-75 mb-2" style="height: 6px;">
+                    <div class="progress-bar {% if examen.puntuacion >= 70 %}bg-success{% elif examen.puntuacion >= 50 %}bg-warning{% else %}bg-danger{% endif %}" style="width: {{ examen.porcentaje_acierto }}%"></div>
+                </div>
+                <small class="text-muted fw-bold">{{ examen.porcentaje_acierto }}% de acierto global</small>
             </div>
         </div>
     </div>
-</div>
-
-{# ── KPI: aciertos / errores / sin contestar ── #}
-<div class="row mb-5 gy-3">
-    <div class="col-md-4">
-        <div class="card kpi-card border-success h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;"></i>
-                <p class="kpi-label mt-2">Aciertos</p>
-                <p class="kpi-value text-success">{{ aciertos }}</p>
+    <div class="col-lg-8">
+        <div class="row g-3 h-100">
+            <div class="col-md-4">
+                <div class="card kpi-card h-100 border-0 shadow-sm" style="background-color: #f0fdf4;">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <span class="material-symbols-outlined text-success mb-2" style="font-size: 2.5rem;">check_circle</span>
+                        <p class="kpi-label mt-2 mb-0 fw-bold">Aciertos</p>
+                        <p class="kpi-value text-success display-6 fw-bold">{{ aciertos }}</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card kpi-card border-danger h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-x-circle-fill text-danger" style="font-size: 2rem;"></i>
-                <p class="kpi-label mt-2">Errores</p>
-                <p class="kpi-value text-danger">{{ errores }}</p>
+            <div class="col-md-4">
+                <div class="card kpi-card h-100 border-0 shadow-sm" style="background-color: #fef2f2;">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <span class="material-symbols-outlined text-danger mb-2" style="font-size: 2.5rem;">cancel</span>
+                        <p class="kpi-label mt-2 mb-0 fw-bold">Errores</p>
+                        <p class="kpi-value text-danger display-6 fw-bold">{{ errores }}</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card kpi-card border-warning h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-dash-circle-fill text-warning" style="font-size: 2rem;"></i>
-                <p class="kpi-label mt-2">Sin contestar</p>
-                <p class="kpi-value text-warning">{{ sin_contestar }}</p>
+            <div class="col-md-4">
+                <div class="card kpi-card h-100 border-0 shadow-sm" style="background-color: #fffbeb;">
+                    <div class="card-body text-center d-flex flex-column justify-content-center">
+                        <span class="material-symbols-outlined text-warning mb-2" style="font-size: 2.5rem;">do_not_disturb_on</span>
+                        <p class="kpi-label mt-2 mb-0 fw-bold text-muted">Sin contestar</p>
+                        <p class="kpi-value text-warning display-6 fw-bold">{{ sin_contestar }}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -61,57 +102,64 @@
 
 {# ── Revisión de preguntas falladas ── #}
 {% if preguntas_falladas %}
-<section>
-    <h4 class="fw-bold mb-4 color-texto">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Preguntas que debes repasar
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0 text-primary-custom d-flex align-items-center gap-2">
+        <span class="material-symbols-outlined fs-3">assignment_late</span> Preguntas para repasar
     </h4>
+    <span class="badge bg-danger rounded-pill px-3 py-2 fw-bold">{{ preguntas_falladas|length }} Errores Detectados</span>
+</div>
+
+<div class="d-flex flex-column gap-4">
     {% for respuesta in preguntas_falladas %}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header">
-            <small class="text-muted">
-                <i class="bi bi-bookmark"></i>
+    <div class="card border-0 shadow-sm overflow-hidden mb-3">
+        <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-primary-custom border border-primary-subtle fw-bold px-2 py-1">PREGUNTA #{{ forloop.counter }}</span>
                 {% if respuesta.pregunta.articulo.capitulo %}
-                    Capítulo: {{ respuesta.pregunta.articulo.capitulo.titulo }}
+                    <span class="badge bg-secondary-subtle text-secondary fw-semibold">{{ respuesta.pregunta.articulo.capitulo.titulo }}</span>
                 {% endif %}
-            </small>
+            </div>
         </div>
-        <div class="card-body">
-            <p class="fw-semibold mb-3">{{ respuesta.pregunta.enunciado }}</p>
-            <p class="text-danger mb-1">
-                <strong><i class="bi bi-x-circle me-1"></i>Tu respuesta ({{ respuesta.respuesta_seleccionada }}):</strong>
-                {{ respuesta.texto_respuesta_seleccionada }}
-            </p>
-            <p class="text-success mb-0">
-                <strong><i class="bi bi-check-circle me-1"></i>Respuesta correcta ({{ respuesta.pregunta.respuesta_correcta }}):</strong>
-                {{ respuesta.pregunta.texto_respuesta_correcta }}
-            </p>
+        <div class="card-body p-4 p-md-5">
+            <h5 class="card-title fw-bold mb-4 lh-base">{{ respuesta.pregunta.enunciado }}</h5>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="answer-box wrong-answer">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="material-symbols-outlined fs-5">cancel</span>
+                            <span class="fw-bold small text-uppercase">Tu respuesta ({{ respuesta.respuesta_seleccionada|default:"N/A" }})</span>
+                        </div>
+                        <p class="mb-0 fw-medium">{{ respuesta.texto_respuesta_seleccionada|default:"(Sin responder)" }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="answer-box correct-answer">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="material-symbols-outlined fs-5">check_circle</span>
+                            <span class="fw-bold small text-uppercase">Respuesta correcta ({{ respuesta.pregunta.respuesta_correcta }})</span>
+                        </div>
+                        <p class="mb-0 fw-medium">{{ respuesta.pregunta.texto_respuesta_correcta }}</p>
+                    </div>
+                </div>
+            </div>
             {% if respuesta.pregunta.explicacion %}
-            <div class="alert alert-info mt-3 mb-0">
-                <i class="bi bi-info-circle me-1"></i>
-                <strong>Explicación:</strong> {{ respuesta.pregunta.explicacion }}
+            <div class="explanation-section mb-0 mt-4">
+                <h6 class="d-flex align-items-center gap-2 fw-bold text-primary-custom mb-2">
+                    <span class="material-symbols-outlined fs-5">gavel</span> Justificación Jurídica
+                </h6>
+                <p class="small text-muted mb-0 fst-italic">{{ respuesta.pregunta.explicacion }}</p>
             </div>
             {% endif %}
         </div>
     </div>
     {% endfor %}
-</section>
+</div>
 {% else %}
-<div class="text-center text-muted py-4">
-    <i class="bi bi-emoji-smile" style="font-size: 3rem;"></i>
-    <p class="mt-2">¡Sin preguntas falladas! Excelente trabajo.</p>
+<div class="text-center bg-white rounded-3 shadow-sm border p-5 my-5">
+    <span class="material-symbols-outlined text-success d-block mb-3" style="font-size: 5rem;">verified</span>
+    <h3 class="fw-bold">¡Simulacro Perfecto!</h3>
+    <p class="text-muted lead mb-4">No has fallado ninguna pregunta. Estás listo para el examen real.</p>
 </div>
 {% endif %}
-
-<div class="d-flex gap-3 justify-content-center mt-5 mb-3">
-    <a href="{% url 'home' %}" class="btn btn-secondary">
-        <i class="bi bi-house me-1"></i>Volver al inicio
-    </a>
-    <form action="{% url 'examen:simular_examen' %}" method="post">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-arrow-repeat me-1"></i>Nuevo simulacro
-        </button>
-    </form>
-</div>
 
 {% endblock container %}

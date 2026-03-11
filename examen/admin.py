@@ -1,19 +1,12 @@
 from django.contrib import admin
-from .models import Oposicion, Bloque, Tema, Capitulo, Articulo, Pregunta, Examen, RespuestaUsuario
+from .models import Oposicion, Tema, Capitulo, Articulo, Pregunta, Examen, RespuestaUsuario, NotaEstudio, PerfilUsuario
 
 
 # ── Inlines ──────────────────────────────────────────────────────────────────
 
-class BloqueInline(admin.TabularInline):
-    model = Bloque
-    extra = 1
-    fields = ('orden', 'titulo')
-
-
 class TemaInline(admin.TabularInline):
-    model = Tema
+    model = Tema.oposiciones.through
     extra = 1
-    fields = ('orden', 'titulo')
 
 
 class CapituloInline(admin.TabularInline):
@@ -25,7 +18,7 @@ class CapituloInline(admin.TabularInline):
 class ArticuloInline(admin.StackedInline):
     model = Articulo
     extra = 0
-    fields = ('numero', 'titulo', 'contenido')
+    fields = ('numero', 'contenido')
     show_change_link = True
 
 
@@ -49,21 +42,13 @@ class RespuestaUsuarioInline(admin.TabularInline):
 class OposicionAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'num_preguntas', 'penalizacion', 'descripcion')
     search_fields = ('nombre',)
-    inlines = [BloqueInline]
-
-
-@admin.register(Bloque)
-class BloqueAdmin(admin.ModelAdmin):
-    list_display = ('orden', 'titulo', 'oposicion')
-    list_filter = ('oposicion',)
-    ordering = ('orden',)
     inlines = [TemaInline]
 
 
 @admin.register(Tema)
 class TemaAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'bloque', 'orden')
-    list_filter = ('bloque',)
+    list_display = ('titulo', 'orden')
+    list_filter = ('oposiciones',)
     search_fields = ('titulo',)
     inlines = [CapituloInline]
 
@@ -71,16 +56,16 @@ class TemaAdmin(admin.ModelAdmin):
 @admin.register(Capitulo)
 class CapituloAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'tema', 'orden')
-    list_filter = ('tema__bloque',)
+    list_filter = ('tema__oposiciones',)
     search_fields = ('titulo',)
     inlines = [ArticuloInline]
 
 
 @admin.register(Articulo)
 class ArticuloAdmin(admin.ModelAdmin):
-    list_display = ('numero', 'titulo', 'capitulo')
-    list_filter = ('capitulo__tema__bloque',)
-    search_fields = ('titulo', 'numero', 'contenido')
+    list_display = ('numero', 'capitulo')
+    list_filter = ('capitulo__tema__oposiciones',)
+    search_fields = ('numero', 'contenido')
     inlines = [PreguntaInline]
 
 
@@ -89,7 +74,7 @@ class PreguntaAdmin(admin.ModelAdmin):
     list_display = ('enunciado_corto', 'respuesta_correcta', 'articulo')
     list_filter = (
         'respuesta_correcta',
-        'articulo__capitulo__tema__bloque',
+        'articulo__capitulo__tema__oposiciones',
     )
     search_fields = ('enunciado', 'respuesta_a', 'respuesta_b', 'respuesta_c', 'respuesta_d')
 
@@ -114,6 +99,18 @@ class RespuestaUsuarioAdmin(admin.ModelAdmin):
     readonly_fields = ('es_correcta',)
 
 
+@admin.register(NotaEstudio)
+class NotaEstudioAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'capitulo', 'fecha_actualizacion')
+    list_filter = ('capitulo__tema__oposiciones',)
+    search_fields = ('usuario__email', 'contenido')
+    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
+
+@admin.register(PerfilUsuario)
+class PerfilUsuarioAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'oposicion_activa')
+    list_filter = ('oposicion_activa',)
+    search_fields = ('usuario__email',)
 # ── Cabecera del panel ────────────────────────────────────────────────────────
 admin.site.site_header = 'Panel de Administración — OPOSICIONES'
 admin.site.index_title = 'Gestión de contenido y usuarios'

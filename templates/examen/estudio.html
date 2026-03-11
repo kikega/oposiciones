@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Estudio de Teoría - Academia de Oposiciones</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary-blue: #044178;
+            --accent-blue: #0d4982;
+            --bg-light: #f8f9fa;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: var(--bg-light);
+        }.display-6 {
+            @apply text-[2.5rem] font-light leading-tight;
+            color: var(--primary-blue);
+        }
+        .lead {
+            @apply text-xl font-light text-slate-600;
+        }.accordion-item {
+            @apply border-b border-slate-200 bg-white;
+        }
+        .accordion-button {
+            @apply flex items-center justify-between w-full p-4 text-left text-sm font-semibold transition-colors;
+            color: var(--primary-blue);
+        }
+        .accordion-button:hover {
+            @apply bg-slate-50;
+        }
+        .accordion-collapse {
+            @apply bg-white overflow-hidden transition-all;
+        }
+        .accordion-body {
+            @apply p-0;
+        }
+        .nav-link-item {
+            @apply block px-8 py-2 text-sm text-slate-600 hover:text-[var(--primary-blue)] hover:bg-blue-50 transition-colors border-l-4 border-transparent;
+        }
+        .nav-link-item.active {
+            @apply text-[var(--primary-blue)] bg-blue-50 border-l-[var(--primary-blue)] font-bold;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+<div class="container-fluid px-6 py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg flex items-center justify-center text-white" style="background-color: var(--primary-blue);">
+<span class="material-symbols-outlined">auto_stories</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold tracking-tight" style="color: var(--primary-blue);">ESTUDIO DE TEORÍA</h1>
+<p class="text-[10px] uppercase tracking-widest font-bold text-slate-400">Preparación de Oposiciones</p>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-[#044178]/20 transition-all" placeholder="Buscar en el tema..." type="text"/>
+</div>
+<div class="flex items-center gap-3 border-l pl-6 border-slate-200">
+<button class="p-2 text-slate-500 hover:text-[var(--primary-blue)]"><span class="material-symbols-outlined">notifications</span></button>
+<div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-[var(--primary-blue)] font-bold text-xs cursor-pointer">JS</div>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden h-[calc(100vh-73px)]">
+<aside class="w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-y-auto custom-scrollbar">
+<div class="p-4 border-b border-slate-200">
+<h6 class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">CONTENIDO DEL CURSO</h6>
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-medium text-slate-500">Progreso del Bloque</span>
+<span class="text-xs font-bold" style="color: var(--primary-blue);">65%</span>
+</div>
+<div class="w-full bg-slate-100 h-1.5 rounded-full">
+<div class="h-full rounded-full transition-all duration-1000" style="width: 65%; background-color: var(--primary-blue);"></div>
+</div>
+</div>
+<div class="accordion">
+<div class="accordion-item">
+<button class="accordion-button">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-lg opacity-60">folder_open</span>
+                            Bloque I: Constitución Española
+                        </span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<div class="accordion-collapse">
+<div class="accordion-body">
+<a class="nav-link-item" href="#">1.1. Título Preliminar</a>
+<a class="nav-link-item" href="#">1.2. Derechos y Deberes</a>
+<a class="nav-link-item" href="#">1.3. La Corona</a>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<button class="accordion-button bg-blue-50/50">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-lg">folder_special</span>
+                            Bloque II: Procedimiento Admin.
+                        </span>
+<span class="material-symbols-outlined text-sm">expand_less</span>
+</button>
+<div class="accordion-collapse">
+<div class="accordion-body">
+<a class="nav-link-item" href="#">2.1. Conceptos Generales</a>
+<a class="nav-link-item active" href="#">2.2. Fases del Procedimiento</a>
+<a class="nav-link-item" href="#">2.3. Silencio Administrativo</a>
+<a class="nav-link-item" href="#">2.4. Recursos Administrativos</a>
+</div>
+</div>
+</div>
+<div class="accordion-item">
+<button class="accordion-button">
+<span class="flex items-center gap-3">
+<span class="material-symbols-outlined text-lg opacity-60">group</span>
+                            Bloque III: Función Pública
+                        </span>
+<span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</aside>
+<main class="flex-1 overflow-y-auto custom-scrollbar">
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+<nav aria-label="breadcrumb" class="mb-8">
+<ol class="flex text-xs font-semibold text-slate-400 uppercase tracking-wider">
+<li class="flex items-center">
+<a class="hover:text-[var(--primary-blue)]" href="#">TEMARIO</a>
+<span class="material-symbols-outlined text-sm mx-2">chevron_right</span>
+</li>
+<li class="flex items-center">
+<a class="hover:text-[var(--primary-blue)]" href="#">BLOQUE II</a>
+<span class="material-symbols-outlined text-sm mx-2">chevron_right</span>
+</li>
+<li aria-current="page" class="text-[var(--primary-blue)]">FASES DEL PROCEDIMIENTO</li>
+</ol>
+</nav>
+<div class="flex items-center gap-2 mb-6 p-1.5 bg-white shadow-sm border border-slate-200 rounded-lg w-fit">
+<button class="p-2 hover:bg-yellow-50 text-yellow-600 rounded" title="Subrayar">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="p-2 hover:bg-blue-50 text-blue-600 rounded" title="Añadir nota">
+<span class="material-symbols-outlined">sticky_note_2</span>
+</button>
+<div class="w-px h-6 bg-slate-200 mx-1"></div>
+<button class="p-2 hover:bg-slate-50 text-slate-500 rounded" title="Lectura voz">
+<span class="material-symbols-outlined">record_voice_over</span>
+</button>
+</div>
+<article class="bg-white p-10 md:p-16 rounded-xl shadow-sm border border-slate-200 mb-10">
+<h2 class="display-6 mb-4">2.2. Las fases del procedimiento administrativo común</h2>
+<p class="lead mb-8">
+                        Estudio detallado de la Ley 39/2015, de 1 de octubre, centrado en la estructura secuencial de los actos administrativos.
+                    </p>
+<div class="prose prose-slate max-w-none text-slate-700 leading-relaxed space-y-6">
+<h4 class="text-2xl font-bold mt-10 mb-4" style="color: var(--primary-blue);">1. Iniciación del procedimiento</h4>
+<p>
+                            El procedimiento administrativo podrá iniciarse de <strong>oficio</strong> o a <strong>solicitud del interesado</strong>. La iniciación de oficio se realizará por acuerdo del órgano competente, bien por propia iniciativa, como consecuencia de orden superior, a petición razonada de otros órganos o por denuncia.
+                        </p>
+<div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg my-6">
+<p class="text-sm italic m-0">
+<strong>Nota Importante:</strong> El plazo para la subsanación de errores es de 10 días, ampliables a otros 5 si la dificultad de los documentos lo requiere.
+                            </p>
+</div>
+<h4 class="text-2xl font-bold mt-10 mb-4" style="color: var(--primary-blue);">2. Ordenación</h4>
+<p>
+                            La ordenación se rige por los principios de celeridad y eficacia. Se impulsará de oficio en todos sus trámites y respetando el orden riguroso de incoación en asuntos de homogénea naturaleza, salvo que por el titular de la unidad administrativa se dé orden motivada en contrario.
+                        </p>
+<h4 class="text-2xl font-bold mt-10 mb-4" style="color: var(--primary-blue);">3. Instrucción</h4>
+<p>
+                            Los actos de instrucción son aquellos necesarios para la determinación, conocimiento y comprobación de los datos en virtud de los cuales deba pronunciarse la resolución. Se realizarán de oficio y a través de medios electrónicos.
+                        </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+<div class="p-5 border border-slate-100 bg-slate-50 rounded-lg">
+<div class="flex items-center gap-3 mb-3" style="color: var(--primary-blue);">
+<span class="material-symbols-outlined">description</span>
+<span class="font-bold">Alegaciones</span>
+</div>
+<p class="text-sm">Los interesados podrán aducir alegaciones en cualquier momento anterior al trámite de audiencia.</p>
+</div>
+<div class="p-5 border border-slate-100 bg-slate-50 rounded-lg">
+<div class="flex items-center gap-3 mb-3" style="color: var(--primary-blue);">
+<span class="material-symbols-outlined">rule</span>
+<span class="font-bold">Prueba</span>
+</div>
+<p class="text-sm">Los hechos podrán acreditarse por cualquier medio de prueba admisible en Derecho.</p>
+</div>
+</div>
+</div>
+<div class="mt-16 pt-10 border-t border-slate-100 text-center">
+<div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50 mb-4" style="color: var(--primary-blue);">
+<span class="material-symbols-outlined text-3xl">lightbulb</span>
+</div>
+<h3 class="text-xl font-bold mb-2">¿Preparado para evaluar lo aprendido?</h3>
+<p class="text-slate-500 mb-6">Realiza un test rápido de 5 preguntas sobre este tema.</p>
+<button class="px-8 py-3 rounded-full text-white font-bold shadow-lg hover:brightness-110 transition-all flex items-center gap-2 mx-auto" style="background-color: var(--primary-blue);">
+<span class="material-symbols-outlined">quiz</span>
+                            REALIZAR QUICK QUIZ
+                        </button>
+</div>
+</article>
+<div class="flex justify-between items-center px-4 mb-20">
+<a class="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-[var(--primary-blue)]" href="#">
+<span class="material-symbols-outlined">west</span> ANTERIOR
+                    </a>
+<a class="flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-[var(--primary-blue)]" href="#">
+                        SIGUIENTE <span class="material-symbols-outlined">east</span>
+</a>
+</div>
+</div>
+</main>
+<aside class="w-80 bg-white border-l border-slate-200 hidden xl:flex flex-col shrink-0">
+<div class="p-4 border-b border-slate-200 flex items-center justify-between">
+<span class="text-sm font-bold" style="color: var(--primary-blue);">MIS NOTAS</span>
+<button class="p-1 text-slate-400 hover:text-[var(--primary-blue)] transition-colors">
+<span class="material-symbols-outlined text-xl">add_circle</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+<div class="p-4 rounded-xl border border-yellow-200 bg-yellow-50/50 shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-yellow-600 uppercase tracking-tighter">PÁGINA 124</span>
+<span class="material-symbols-outlined text-sm text-slate-300">more_horiz</span>
+</div>
+<p class="text-xs text-slate-600 leading-relaxed italic">
+                        "Ojo con el Art. 68: el trámite de subsanación es de carácter obligatorio antes de declarar el desistimiento."
+                    </p>
+</div>
+<div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">PÁGINA 126</span>
+<span class="material-symbols-outlined text-sm text-slate-300">more_horiz</span>
+</div>
+<p class="text-xs text-slate-700 leading-relaxed">
+                        Revisar plazos de informes facultativos vs preceptivos.
+                    </p>
+</div>
+</div>
+<div class="p-4 border-t border-slate-200 bg-slate-50">
+<div class="relative">
+<textarea class="w-full text-xs p-3 rounded-lg border-slate-200 focus:ring-[var(--primary-blue)] focus:border-[var(--primary-blue)] resize-none" placeholder="Escribe una nota rápida..." rows="3"></textarea>
+<button class="absolute bottom-3 right-3 p-1.5 rounded-md text-white shadow-sm" style="background-color: var(--primary-blue);">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+
+</body></html>

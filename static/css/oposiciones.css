@@ -1,4 +1,3 @@
-/*
 :root {
     --primary-color: #0d4c83;
     --primary-dark: #044178;
@@ -17,6 +16,12 @@ body {
     vertical-align: middle;
 }
 
+/* Layout y Sidebar */
+.layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
 .sidebar {
     width: var(--sidebar-width);
     height: 100vh;
@@ -27,7 +32,7 @@ body {
     border-right: 1px solid #e2e8f0;
     z-index: 1000;
     display: flex;
-    flex-column: column;
+    flex-direction: column;
 }
 
 .sidebar-header {
@@ -66,26 +71,26 @@ body {
 
 .nav-link.active {
     background-color: rgba(13, 76, 131, 0.1);
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
     font-weight: 600;
 }
 
 .main-content {
     margin-left: var(--sidebar-width);
     padding: 2rem;
-    min-height: 100vh;
+    width: calc(100% - var(--sidebar-width));
 }
 
-
-
-.btn-primary {
+.btn-primary, .btn-primary-custom {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
+    color: white;
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-primary-custom:hover {
     background-color: var(--primary-dark);
     border-color: var(--primary-dark);
+    color: white;
 }
 
 .progress {
@@ -94,11 +99,11 @@ body {
 }
 
 .text-primary-custom {
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
 }
 
 .bg-primary-custom {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
 }
 
 .table thead th {
@@ -116,8 +121,6 @@ body {
     vertical-align: middle;
 }
 
-
-
 .user-profile {
     padding: 1.5rem;
     border-top: 1px solid #e2e8f0;
@@ -129,7 +132,8 @@ body {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
-}*/
+}
+
 
 /* Tarjetas del dashboard */
 .card {
