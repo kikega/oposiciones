@@ -63,12 +63,16 @@ class Tema(models.Model):
         Oposicion, related_name='temas',
         verbose_name=_("oposiciones"), help_text=_("Oposiciones a las que pertenece este tema.")
     )
+    bloque = models.CharField(
+        _("bloque"), max_length=150, blank=True, null=True,
+        help_text=_("Nombre o identificador del bloque. Ej: 'Bloque I' o 'Informática'.")
+    )
     orden = models.PositiveIntegerField(
         _("orden"), default=0,
         help_text=_("Número para ordenar los temas (referencial, ya que puede variar por oposición).")
     )
-    titulo = models.CharField(
-        _("título del tema"), max_length=255,
+    titulo = models.TextField(
+        _("título del tema"),
         help_text=_("Título del tema o epígrafe.")
     )
     documentacion = models.FileField(

@@ -165,7 +165,7 @@ class TemarioView(LoginRequiredMixin, ListView):
     template_name = 'examen/temario.html'
     model = Tema
     context_object_name = 'temas'
-    ordering = ['orden', 'titulo']
+    ordering = ['bloque', 'orden', 'titulo']
 
     def get_queryset(self):
         qs = super().get_queryset()

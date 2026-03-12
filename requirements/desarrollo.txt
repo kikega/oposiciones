@@ -1,5 +1,5 @@
 -r ./base.txt
 
+Django==5.2.4
 django-extensions==4.1
 django-debug-toolbar==6.0.0
-

@@ -16,8 +16,13 @@
     </div>
     
     <div class="position-relative z-1">
-        <span class="badge bg-primary-custom mb-3 px-3 py-2 fw-bold letter-spacing-1">Tema {{ tema.orden }}</span>
-        <h1 class="display-5 fw-bold mb-3" style="color: var(--primary-dark);">{{ tema.titulo }}</h1>
+        <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+            <span class="badge bg-primary-custom px-3 py-2 fw-bold letter-spacing-1">Tema {{ tema.orden }}</span>
+            {% if tema.bloque %}
+            <span class="badge border bg-secondary bg-opacity-10 text-secondary px-3 py-2 fw-bold" style="white-space: normal; line-height: 1.2;">{{ tema.bloque }}</span>
+            {% endif %}
+        </div>
+        <h1 class="display-5 fw-bold mb-3" style="color: var(--primary-dark); word-break: break-word; line-height: 1.2;">{{ tema.titulo }}</h1>
     </div>
 </div>
 
