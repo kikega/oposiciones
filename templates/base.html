@@ -84,6 +84,13 @@
                         <a class="nav-link" href="#">
                             <span class="material-symbols-outlined">analytics</span> Estadísticas
                         </a>
+                        
+                        {% if request.user.is_superuser %}
+                        <hr class="text-white-50 my-2">
+                        <a class="nav-link text-warning fw-bold" href="{% url 'admin:index' %}" target="_blank">
+                            <span class="material-symbols-outlined">admin_panel_settings</span> Administración
+                        </a>
+                        {% endif %}
                     </nav>
 
                     <div class="user-profile">

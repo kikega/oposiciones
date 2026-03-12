@@ -9,7 +9,7 @@ class UsuarioUserAdmin(UserAdmin):
     Administración del modelo de Usuario
     """
     model = Usuario
-    list_display = ('email', 'username', 'is_staff', 'is_active')
+    list_display = ('email', 'username', 'is_staff', 'is_active','last_login')
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password','username', 'numero_telefono',)}),
