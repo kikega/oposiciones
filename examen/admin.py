@@ -59,7 +59,7 @@ class RecursoTemaInline(admin.TabularInline):
 
 @admin.register(Capitulo)
 class CapituloAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'tema', 'orden', 'importancia', 'es_modificacion_reciente')
+    list_display = ('titulo', 'orden', 'tema', 'importancia', 'es_modificacion_reciente')
     list_filter = ('tema__oposiciones', 'importancia', 'es_modificacion_reciente')
     search_fields = ('titulo',)
     inlines = [ArticuloInline, RecursoTemaInline]
