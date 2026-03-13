@@ -14,7 +14,7 @@
     <div class="position-absolute top-0 end-0 opacity-10 p-4" style="pointer-events: none;">
         <span class="material-symbols-outlined" style="font-size: 15rem; color: var(--primary-color);">auto_stories</span>
     </div>
-    
+
     <div class="position-relative z-1">
         <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
             <span class="badge bg-primary-custom px-3 py-2 fw-bold letter-spacing-1">Tema {{ tema.orden }}</span>
@@ -23,6 +23,24 @@
             {% endif %}
         </div>
         <h1 class="display-5 fw-bold mb-3" style="color: var(--primary-dark); word-break: break-word; line-height: 1.2;">{{ tema.titulo }}</h1>
+
+        {# Barra de progreso del tema para el usuario actual #}
+        {% if capitulos %}
+        <div class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="fw-semibold text-muted">Tu progreso en este tema</small>
+                <small class="fw-bold text-primary-custom">{{ capitulos_completados }} / {{ capitulos|length }} capítulos</small>
+            </div>
+            <div class="progress" style="height: 10px; border-radius: 100px;">
+                <div class="progress-bar bg-success"
+                     role="progressbar"
+                     style="width: {{ progreso_pct }}%"
+                     aria-valuenow="{{ progreso_pct }}"
+                     aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
@@ -36,9 +54,10 @@
         <table class="table mb-0 table-hover align-middle">
             <thead>
                 <tr>
-                    <th style="width: 80px;" class="text-center">#</th>
+                    <th style="width: 60px;" class="text-center">#</th>
                     <th>Título del Capítulo</th>
-                    <th class="text-end">Material de Estudio</th>
+                    <th class="text-center" style="width:140px;">Estado</th>
+                    <th class="text-end">Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -51,22 +70,39 @@
                     </td>
                     <td>
                         <div class="fw-semibold fs-6">{{ capitulo.titulo }}</div>
+                        <div class="d-flex gap-1 mt-1 flex-wrap">
+                            {% if capitulo.importancia == 3 %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle small px-2">
+                                    <span class="material-symbols-outlined" style="font-size: 0.75rem;">star</span> Muy importante
+                                </span>
+                            {% elif capitulo.importancia == 2 %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle small px-2">
+                                    <span class="material-symbols-outlined" style="font-size: 0.75rem;">star_half</span> Importante
+                                </span>
+                            {% endif %}
+                            {% if capitulo.es_modificacion_reciente %}
+                                <span class="badge bg-info-subtle text-info border border-info-subtle small px-2">
+                                    <span class="material-symbols-outlined" style="font-size: 0.75rem;">notification_important</span> Novedad
+                                </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        {% if capitulo.pk in capitulos_completados_ids %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 d-inline-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined fs-6">check_circle</span> Estudiado
+                            </span>
+                        {% else %}
+                            <span class="badge bg-light border text-muted px-2 py-1 d-inline-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined fs-6">radio_button_unchecked</span> Pendiente
+                            </span>
+                        {% endif %}
                     </td>
                     <td class="text-end">
                         <a href="{% url 'examen:capitulo_detalle' pk=capitulo.pk %}"
-                           class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 shadow-sm px-3 me-2">
+                           class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2 shadow-sm px-3">
                             <span class="material-symbols-outlined fs-6">auto_stories</span> Leer Capítulo
                         </a>
-                        {% if capitulo.documentacion %}
-                            <a href="{% url 'examen:descargar_capitulo' pk=capitulo.pk %}"
-                               class="btn btn-sm btn-primary-custom d-inline-flex align-items-center gap-2 shadow-sm px-3">
-                                <span class="material-symbols-outlined fs-6">picture_as_pdf</span> Descargar PDF
-                            </a>
-                        {% else %}
-                            <span class="badge bg-light text-muted border px-3 py-2 fw-medium d-inline-flex align-items-center gap-1">
-                                <span class="material-symbols-outlined fs-6">block</span> Sin documento
-                            </span>
-                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

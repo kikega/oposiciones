@@ -37,13 +37,28 @@ class Oposicion(models.Model):
         return self.nombre
 
 class PerfilUsuario(models.Model):
-    """Perfil extendido del usuario para almacenar su matrícula y oposiciones activas."""
+    """Perfil extendido del usuario: datos personales y oposiciones."""
     usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='perfil')
     oposiciones_inscritas = models.ManyToManyField(Oposicion, related_name='alumnos', blank=True)
     oposicion_activa = models.ForeignKey(Oposicion, on_delete=models.SET_NULL, null=True, blank=True, related_name='usuarios_activos')
 
+    # Datos personales
+    nombre = models.CharField(_("nombre"), max_length=100, blank=True, default='')
+    apellidos = models.CharField(_("apellidos"), max_length=150, blank=True, default='')
+    telefono = models.CharField(_("teléfono"), max_length=20, blank=True, default='')
+    fecha_nacimiento = models.DateField(_("fecha de nacimiento"), null=True, blank=True)
+    ciudad = models.CharField(_("ciudad"), max_length=100, blank=True, default='')
+    bio = models.TextField(_("notas personales / motivación"), blank=True, default='',
+                           help_text=_("Espacio libre para tus apuntes de motivación o plan de estudio."))
+
     def __str__(self):
-        return f"Perfil de {self.usuario.email}"
+        nombre_completo = f"{self.nombre} {self.apellidos}".strip()
+        return nombre_completo or self.usuario.email
+
+    @property
+    def nombre_completo(self) -> str:
+        """Retorna el nombre completo o el email si no hay datos."""
+        return f"{self.nombre} {self.apellidos}".strip() or self.usuario.email
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def crear_perfil_usuario(sender, instance, created, **kwargs):
@@ -104,15 +119,19 @@ class Capitulo(models.Model):
         _("título del capítulo"), max_length=255,
         help_text=_("Título del capítulo o epígrafe.")
     )
-    oposicion = models.ManyToManyField(
-        Oposicion, related_name='capitulosOposicion',
-        verbose_name=_("oposición"), blank=True,
-        help_text=_("Oposiciones a las que pertenece este capítulo.")
+    importancia = models.PositiveIntegerField(
+        _("importancia o frecuencia"), default=1,
+        help_text=_("Nivel de importancia del capítulo (ej. 1=Normal, 2=Importante, 3=Muy Importante).")
     )
-    documentacion = models.FileField(
-        _("documentación"), upload_to="pdf/capitulos/", max_length=255,
-        blank=True, null=True, help_text=_("Archivo PDF del Capítulo.")
+    fecha_actualizacion_ley = models.DateField(
+        _("fecha de actualización legislativa"), blank=True, null=True,
+        help_text=_("Fecha en que este capítulo fue modificado por cambios legislativos.")
     )
+    es_modificacion_reciente = models.BooleanField(
+        _("modificación reciente"), default=False,
+        help_text=_("Indica si este capítulo ha sufrido modificaciones legislativas recientes.")
+    )
+
 
     class Meta:
         verbose_name = _("capítulo")
@@ -150,6 +169,63 @@ class Articulo(models.Model):
     def __str__(self):
         return f"Art. {self.numero} - {self.capitulo.titulo}"
 
+
+# --- Modelos de Recursos y Progreso ---
+
+class RecursoTema(models.Model):
+    """Recursos multimedia adicionales para un capítulo."""
+    class TipoRecurso(models.TextChoices):
+        VIDEO = 'VIDEO', _('Vídeo')
+        AUDIO = 'AUDIO', _('Audio/Podcast')
+        ESQUEMA = 'ESQUEMA', _('Esquema/Mapa Mental')
+        DOCUMENTO = 'DOCUMENTO', _('Documento Anexo')
+
+    capitulo = models.ForeignKey(
+        Capitulo, on_delete=models.CASCADE, related_name='recursos',
+        verbose_name=_("capítulo")
+    )
+    titulo = models.CharField(_("título del recurso"), max_length=255)
+    tipo = models.CharField(
+        _("tipo de recurso"), max_length=20, choices=TipoRecurso.choices, default=TipoRecurso.DOCUMENTO
+    )
+    url = models.URLField(
+        _("URL del recurso"), max_length=500, blank=True, null=True,
+        help_text=_("Enlace al recurso (ej. YouTube, Spotify o Drive).")
+    )
+    archivo = models.FileField(
+        _("archivo"), upload_to="recursos_capitulos/", max_length=255,
+        blank=True, null=True, help_text=_("Archivo local si no se usa URL.")
+    )
+
+    class Meta:
+        verbose_name = _("recurso de tema")
+        verbose_name_plural = _("recursos de tema")
+        ordering = ['capitulo', 'tipo', 'titulo']
+
+    def __str__(self):
+        return f"[{self.get_tipo_display()}] {self.titulo} - {self.capitulo}"
+
+class ProgresoEstudio(models.Model):
+    """Registro del progreso de estudio de un usuario por capítulo."""
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='progresos_estudio', verbose_name=_("usuario")
+    )
+    capitulo = models.ForeignKey(
+        Capitulo, on_delete=models.CASCADE, related_name='progresos_usuarios',
+        verbose_name=_("capítulo")
+    )
+    completado = models.BooleanField(_("completado"), default=False)
+    fecha_completado = models.DateTimeField(_("fecha de finalización"), null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("progreso de estudio")
+        verbose_name_plural = _("progresos de estudio")
+        unique_together = ('usuario', 'capitulo')
+
+    def __str__(self):
+        estado = "Completado" if self.completado else "Pendiente"
+        return f"{self.usuario.email} - {self.capitulo.titulo}: {estado}"
 
 # --- Modelo para Notas de Estudio ---
 

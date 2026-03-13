@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Oposicion, Tema, Capitulo, Articulo, Pregunta, Examen, RespuestaUsuario, NotaEstudio, PerfilUsuario
+from .models import Oposicion, Tema, Capitulo, Articulo, Pregunta, Examen, RespuestaUsuario, NotaEstudio, PerfilUsuario, RecursoTema, ProgresoEstudio
 
 
 # ── Inlines ──────────────────────────────────────────────────────────────────
@@ -12,7 +12,7 @@ class TemaInline(admin.TabularInline):
 class CapituloInline(admin.TabularInline):
     model = Capitulo
     extra = 1
-    fields = ('orden', 'titulo', 'documentacion')
+    fields = ('orden', 'titulo', 'importancia', 'es_modificacion_reciente')
 
 
 class ArticuloInline(admin.StackedInline):
@@ -53,12 +53,16 @@ class TemaAdmin(admin.ModelAdmin):
     inlines = [CapituloInline]
 
 
+class RecursoTemaInline(admin.TabularInline):
+    model = RecursoTema
+    extra = 1
+
 @admin.register(Capitulo)
 class CapituloAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'tema', 'orden')
-    list_filter = ('tema__oposiciones',)
+    list_display = ('titulo', 'tema', 'orden', 'importancia', 'es_modificacion_reciente')
+    list_filter = ('tema__oposiciones', 'importancia', 'es_modificacion_reciente')
     search_fields = ('titulo',)
-    inlines = [ArticuloInline]
+    inlines = [ArticuloInline, RecursoTemaInline]
 
 
 @admin.register(Articulo)
@@ -111,6 +115,19 @@ class PerfilUsuarioAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'oposicion_activa')
     list_filter = ('oposicion_activa',)
     search_fields = ('usuario__email',)
+
+@admin.register(ProgresoEstudio)
+class ProgresoEstudioAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'capitulo', 'completado', 'fecha_completado')
+    list_filter = ('completado', 'capitulo__tema__oposiciones')
+    search_fields = ('usuario__email', 'capitulo__titulo')
+
+@admin.register(RecursoTema)
+class RecursoTemaAdmin(admin.ModelAdmin):
+    list_display = ('titulo', 'tipo', 'capitulo')
+    list_filter = ('tipo', 'capitulo__tema__oposiciones')
+    search_fields = ('titulo', 'capitulo__titulo')
+
 # ── Cabecera del panel ────────────────────────────────────────────────────────
 admin.site.site_header = 'Panel de Administración — OPOSICIONES'
 admin.site.index_title = 'Gestión de contenido y usuarios'

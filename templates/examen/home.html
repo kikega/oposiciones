@@ -149,14 +149,14 @@
                     <div class="col-md-4">
                         <div class="card h-100 border-0 shadow-sm position-relative overflow-hidden">
                             <!-- Indicador de urgencia -->
-                            <div class="position-absolute top-0 start-0 w-100" style="height: 4px; background-color: {% if rec.score > 70 %}#dc3545{% elif rec.score > 40 %}#ffc107{% else %}#17a2b8{% endif %};"></div>
+                            <div class="position-absolute top-0 start-0 w-100" style="height: 4px; background-color: {% if rec.score > 70 %}#dc3545{% elif rec.score > 40 %}#0d6efd{% else %}#17a2b8{% endif %};"></div>
                             
                             <div class="card-body d-flex flex-column p-4">
                                 <h6 class="fw-bold text-dark text-truncate" title="{{ rec.capitulo.titulo }}">{{ rec.capitulo.titulo }}</h6>
                                 <p class="text-muted small mb-3 flex-grow-1">Tema {{ rec.capitulo.tema.orden }}</p>
                                 
                                 <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <span class="badge {% if rec.score > 70 %}bg-danger{% elif rec.score > 40 %}text-bg-warning{% else %}bg-info px-2 text-white{% endif %} py-1">
+                                    <span class="badge {% if rec.score > 70 %}bg-danger{% elif rec.score > 40 %}text-bg-primary{% else %}bg-info px-2 text-white{% endif %} py-1">
                                         Prioridad: {{ rec.score|floatformat:0 }}
                                     </span>
                                 </div>
@@ -274,7 +274,7 @@
                                     {% if examen.puntuacion >= 70 %}
                                         <span class="badge rounded-pill px-3 py-2 fw-bold" style="background-color: rgba(25, 135, 84, 0.1); color: #198754;">{{ examen.puntuacion|floatformat:2 }} / 100</span>
                                     {% elif examen.puntuacion >= 50 %}
-                                        <span class="badge rounded-pill px-3 py-2 fw-bold" style="background-color: rgba(255, 193, 7, 0.1); color: #ffc107;">{{ examen.puntuacion|floatformat:2 }} / 100</span>
+                                        <span class="badge rounded-pill px-3 py-2 fw-bold" style="background-color: rgba(13, 76, 131, 0.1); color: #0d4c83;">{{ examen.puntuacion|floatformat:2 }} / 100</span>
                                     {% else %}
                                         <span class="badge rounded-pill px-3 py-2 fw-bold" style="background-color: rgba(220, 53, 69, 0.1); color: #dc3545;">{{ examen.puntuacion|floatformat:2 }} / 100</span>
                                     {% endif %}

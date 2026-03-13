@@ -19,7 +19,8 @@ from django.db.models import Max, Min, Avg, Count
 # De Examen
 from .models import (
     Tema, Capitulo, Oposicion,
-    Examen, Pregunta, RespuestaUsuario, Articulo, NotaEstudio, PerfilUsuario
+    Examen, Pregunta, RespuestaUsuario, Articulo, NotaEstudio, PerfilUsuario,
+    ProgresoEstudio, RecursoTema,
 )
 
 logger = logging.getLogger(__name__)
@@ -183,31 +184,27 @@ class TemarioDetalleView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tema = get_object_or_404(Tema, pk=kwargs['pk'])
+        capitulos = Capitulo.objects.filter(tema=tema).order_by('orden')
         context['tema'] = tema
-        context['capitulos'] = Capitulo.objects.filter(tema=tema).order_by('orden')
+        context['capitulos'] = capitulos
+
+        # Calcular el progreso del usuario en este tema
+        total = capitulos.count()
+        completados_ids = set(
+            ProgresoEstudio.objects.filter(
+                usuario=self.request.user,
+                capitulo__in=capitulos,
+                completado=True,
+            ).values_list('capitulo_id', flat=True)
+        )
+        completados_count = len(completados_ids)
+        context['capitulos_completados'] = completados_count
+        context['capitulos_completados_ids'] = completados_ids
+        context['progreso_pct'] = round((completados_count / total) * 100) if total > 0 else 0
         return context
 
 
-@login_required
-def descargar_capitulo(request, pk):
-    """Descarga el archivo de documentación de un capítulo."""
-    capitulo = get_object_or_404(Capitulo, pk=pk)
 
-    if capitulo.documentacion and hasattr(capitulo.documentacion, 'path'):
-        capitulo_path = capitulo.documentacion.path
-        response = FileResponse(
-            open(capitulo_path, 'rb'),
-            as_attachment=True,
-            filename=capitulo.documentacion.name,
-        )
-        if not settings.DEBUG:
-            response['Connection'] = 'close'
-        return response
-
-    return redirect(
-        reverse('examen:errores', kwargs={'error_code': 404})
-        + '?mensaje=No+se+encontr%C3%B3+el+archivo+de+documentaci%C3%B3n'
-    )
 
 @login_required
 def descargar_tema(request, pk):
@@ -273,7 +270,16 @@ class CapituloDetalleView(LoginRequiredMixin, DetailView):
         except ValueError:
             context['capitulo_anterior'] = None
             context['capitulo_siguiente'] = None
-            
+
+        # Progreso de estudio del usuario en este capítulo
+        progreso_qs = ProgresoEstudio.objects.filter(
+            usuario=self.request.user, capitulo=capitulo
+        )
+        context['progreso'] = progreso_qs.first()
+
+        # Recursos multimedia adjuntos al capítulo
+        context['recursos'] = capitulo.recursos.all().order_by('tipo', 'titulo')
+
         return context
 
 
@@ -295,6 +301,41 @@ class GuardarNotaView(LoginRequiredMixin, View):
             NotaEstudio.objects.filter(usuario=request.user, capitulo=capitulo).delete()
             
         return redirect(reverse('examen:capitulo_detalle', kwargs={'pk': capitulo.pk}))
+
+
+class MarcarCapituloView(LoginRequiredMixin, View):
+    """Marca o desmarca un capítulo como completado por el usuario (toggle)."""
+
+    def post(self, request, pk, *args, **kwargs):
+        capitulo = get_object_or_404(Capitulo, pk=pk)
+        progreso, created = ProgresoEstudio.objects.get_or_create(
+            usuario=request.user,
+            capitulo=capitulo,
+        )
+        if not created and progreso.completado:
+            # Desmarcar
+            progreso.completado = False
+            progreso.fecha_completado = None
+        else:
+            # Marcar como completado
+            progreso.completado = True
+            progreso.fecha_completado = timezone.now()
+        progreso.save()
+        return redirect(reverse('examen:capitulo_detalle', kwargs={'pk': capitulo.pk}))
+
+
+class CapituloImpresionView(LoginRequiredMixin, DetailView):
+    """Vista optimizada para impresión/PDF de un capítulo completo."""
+
+    model = Capitulo
+    template_name = 'examen/capitulo_impresion.html'
+    context_object_name = 'capitulo'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        capitulo = self.object
+        context['articulos'] = capitulo.articulosCapitulo.all().order_by('numero')
+        return context
 
 
 class StartExamenCapituloView(LoginRequiredMixin, View):
@@ -558,3 +599,78 @@ class ErrorView(LoginRequiredMixin, TemplateView):
         context['error_code'] = kwargs.get('error_code', 500)
         context['error_message'] = self.request.GET.get('mensaje', 'Se ha producido un error inesperado.')
         return context
+
+
+class PerfilView(LoginRequiredMixin, View):
+    """Página de perfil del usuario: datos personales y gestión de oposiciones."""
+
+    template_name = 'examen/perfil.html'
+
+    def _build_context(self, request):
+        """Construye el contexto compartido para GET y POST."""
+        perfil, _ = PerfilUsuario.objects.get_or_create(usuario=request.user)
+        todas_oposiciones = Oposicion.objects.all().order_by('nombre')
+        oposiciones_inscritas_ids = set(
+            perfil.oposiciones_inscritas.values_list('pk', flat=True)
+        )
+        # Progreso global: capítulos completados de todos sus temas
+        total_capitulos = Capitulo.objects.count()
+        capitulos_completados = ProgresoEstudio.objects.filter(
+            usuario=request.user, completado=True
+        ).count()
+        progreso_global_pct = round((capitulos_completados / total_capitulos) * 100) if total_capitulos > 0 else 0
+
+        return {
+            'perfil': perfil,
+            'todas_oposiciones': todas_oposiciones,
+            'oposiciones_inscritas_ids': oposiciones_inscritas_ids,
+            'total_capitulos': total_capitulos,
+            'capitulos_completados': capitulos_completados,
+            'progreso_global_pct': progreso_global_pct,
+        }
+
+    def get(self, request, *args, **kwargs):
+        context = self._build_context(request)
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        perfil, _ = PerfilUsuario.objects.get_or_create(usuario=request.user)
+
+        # Datos personales
+        perfil.nombre = request.POST.get('nombre', '').strip()
+        perfil.apellidos = request.POST.get('apellidos', '').strip()
+        perfil.telefono = request.POST.get('telefono', '').strip()
+        perfil.ciudad = request.POST.get('ciudad', '').strip()
+        perfil.bio = request.POST.get('bio', '').strip()
+        fecha_nacimiento = request.POST.get('fecha_nacimiento', '').strip()
+        if fecha_nacimiento:
+            try:
+                from datetime import date
+                y, m, d = map(int, fecha_nacimiento.split('-'))
+                perfil.fecha_nacimiento = date(y, m, d)
+            except (ValueError, TypeError):
+                perfil.fecha_nacimiento = None
+        else:
+            perfil.fecha_nacimiento = None
+
+        # Oposición activa
+        oposicion_activa_pk = request.POST.get('oposicion_activa', '').strip()
+        if oposicion_activa_pk:
+            try:
+                perfil.oposicion_activa = Oposicion.objects.get(pk=oposicion_activa_pk)
+            except Oposicion.DoesNotExist:
+                perfil.oposicion_activa = None
+        else:
+            perfil.oposicion_activa = None
+
+        perfil.save()
+
+        # Oposiciones inscritas (checkboxes)
+        oposiciones_ids = request.POST.getlist('oposiciones_inscritas')
+        oposiciones_seleccionadas = Oposicion.objects.filter(pk__in=oposiciones_ids)
+        perfil.oposiciones_inscritas.set(oposiciones_seleccionadas)
+
+        from django.contrib import messages
+        messages.success(request, "¡Perfil actualizado correctamente!")
+        return redirect(reverse('examen:perfil'))
+

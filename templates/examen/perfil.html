@@ -1,0 +1,179 @@
+{# Profile view template #}
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Mi Perfil — OpoPrep{% endblock %}
+
+{% block container %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1 text-primary-custom d-flex align-items-center gap-2">
+            <span class="material-symbols-outlined fs-2">manage_accounts</span> Mi Perfil
+        </h1>
+        <p class="text-muted small mb-0">Gestiona tus datos personales y oposiciones</p>
+    </div>
+</div>
+
+{% if messages %}
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible d-flex align-items-center gap-2 shadow-sm mb-4" role="alert">
+        <span class="material-symbols-outlined">
+            {% if msg.tags == 'success' %}check_circle{% else %}info{% endif %}
+        </span>
+        <div>{{ msg }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+{% endif %}
+
+<form method="post" id="form-perfil">
+{% csrf_token %}
+<div class="row g-4">
+
+    {# ── Columna izquierda: Datos personales ── #}
+    <div class="col-lg-8">
+
+        {# Datos de identidad #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom p-4 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary-custom">badge</span>
+                <h5 class="fw-bold mb-0">Datos Personales</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Nombre</label>
+                        <input type="text" name="nombre" class="form-control shadow-sm"
+                               value="{{ perfil.nombre }}" placeholder="Tu nombre">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Apellidos</label>
+                        <input type="text" name="apellidos" class="form-control shadow-sm"
+                               value="{{ perfil.apellidos }}" placeholder="Tus apellidos">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Email</label>
+                        <input type="email" class="form-control shadow-sm bg-light" value="{{ request.user.email }}" disabled>
+                        <small class="text-muted">El email no se puede cambiar aquí.</small>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Teléfono</label>
+                        <input type="tel" name="telefono" class="form-control shadow-sm"
+                               value="{{ perfil.telefono }}" placeholder="+34 600 000 000">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Fecha de Nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" class="form-control shadow-sm"
+                               value="{{ perfil.fecha_nacimiento|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Ciudad</label>
+                        <input type="text" name="ciudad" class="form-control shadow-sm"
+                               value="{{ perfil.ciudad }}" placeholder="Tu ciudad">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold small text-muted text-uppercase">Notas Personales / Plan de Estudio</label>
+                        <textarea name="bio" class="form-control shadow-sm" rows="4"
+                                  placeholder="Escribe aquí tu motivación, metas o plan de estudio personal...">{{ perfil.bio }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Cambio de contraseña (link externo) #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4 d-flex align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary fs-3">lock</span>
+                    <div>
+                        <div class="fw-semibold">Contraseña</div>
+                        <small class="text-muted">Actualiza tu contraseña de acceso</small>
+                    </div>
+                </div>
+                <a href="#modalCambiocontraseña" data-bs-toggle="modal" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1">
+                    <span class="material-symbols-outlined fs-6">edit</span> Cambiar
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    {# ── Columna derecha: Oposiciones ── #}
+    <div class="col-lg-4">
+
+        {# Oposición activa #}
+        <div class="card border-0 shadow-sm mb-4 border-top border-primary border-4">
+            <div class="card-header bg-white border-bottom pt-3 pb-2 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary-custom">stars</span>
+                <h6 class="fw-bold mb-0">Oposición Activa</h6>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted small mb-3">
+                    Define cuál es tu oposición principal. Es la que se usará para filtrar el temario y las estadísticas del dashboard.
+                </p>
+                <select name="oposicion_activa" class="form-select shadow-sm">
+                    <option value="">— Sin oposición activa —</option>
+                    {% for op in todas_oposiciones %}
+                    <option value="{{ op.pk }}" {% if perfil.oposicion_activa and perfil.oposicion_activa.pk == op.pk %}selected{% endif %}>
+                        {{ op.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        {# Oposiciones inscritas #}
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom pt-3 pb-2 d-flex align-items-center gap-2">
+                <span class="material-symbols-outlined text-primary-custom">checklist</span>
+                <h6 class="fw-bold mb-0">Oposiciones Inscritas</h6>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted small mb-3">
+                    Marca todas las oposiciones para las que te estás preparando. Tu progreso de estudio se comparte entre ellas.
+                </p>
+                <div class="d-flex flex-column gap-2">
+                    {% for op in todas_oposiciones %}
+                    <div class="form-check form-switch p-3 rounded-3 border bg-light mb-0">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               name="oposiciones_inscritas" value="{{ op.pk }}"
+                               id="op_{{ op.pk }}"
+                               {% if op.pk in oposiciones_inscritas_ids %}checked{% endif %}>
+                        <label class="form-check-label fw-semibold ms-2 small" for="op_{{ op.pk }}">
+                            {{ op.nombre }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {# Progreso global #}
+        <div class="card border-0 shadow-sm mb-4 bg-light">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <span class="material-symbols-outlined text-primary-custom fs-3">insights</span>
+                    <div>
+                        <div class="fw-bold">Progreso Global</div>
+                        <small class="text-muted">Capítulos estudiados</small>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="text-muted">{{ capitulos_completados }} de {{ total_capitulos }}</small>
+                    <small class="fw-bold text-primary-custom">{{ progreso_global_pct }}%</small>
+                </div>
+                <div class="progress" style="height: 8px; border-radius: 100px;">
+                    <div class="progress-bar bg-success" role="progressbar"
+                         style="width: {{ progreso_global_pct }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        {# Guardar #}
+        <button type="submit" class="btn btn-primary-custom w-100 fw-bold d-inline-flex align-items-center justify-content-center gap-2 py-2 shadow-sm">
+            <span class="material-symbols-outlined">save</span> Guardar Cambios
+        </button>
+    </div>
+
+</div>
+</form>
+{% endblock container %}
