@@ -674,3 +674,124 @@ class PerfilView(LoginRequiredMixin, View):
         messages.success(request, "¡Perfil actualizado correctamente!")
         return redirect(reverse('examen:perfil'))
 
+
+# =============================================================================
+# ── PANEL DE CARGA — STAFF ONLY ───────────────────────────────────────────────
+# =============================================================================
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
+from django.http import JsonResponse
+from django.contrib import messages as _messages
+
+from .forms import PreguntaStaffForm
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class PanelStaffView(LoginRequiredMixin, TemplateView):
+    """Dashboard del panel de carga exclusivo para staff."""
+
+    template_name = 'staff/panel.html'
+
+    def get_context_data(self, **kwargs: dict) -> dict:
+        context = super().get_context_data(**kwargs)
+
+        total_preguntas = Pregunta.objects.count()
+        total_articulos = Articulo.objects.count()
+        articulos_sin_preguntas = Articulo.objects.filter(
+            preguntasArticulo__isnull=True
+        ).count()
+
+        preguntas_por_oposicion = (
+            Oposicion.objects.annotate(
+                total_banco=Count(
+                    'temas__capitulosTema__articulosCapitulo__preguntasArticulo',
+                    distinct=True
+                )
+            ).values('nombre', 'total_banco').order_by('nombre')
+        )
+
+        ultimas_preguntas = Pregunta.objects.select_related(
+            'articulo__capitulo__tema'
+        ).order_by('-pk')[:10]
+
+        context.update({
+            'total_preguntas': total_preguntas,
+            'total_articulos': total_articulos,
+            'articulos_sin_preguntas': articulos_sin_preguntas,
+            'preguntas_por_oposicion': list(preguntas_por_oposicion),
+            'ultimas_preguntas': ultimas_preguntas,
+        })
+        return context
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class NuevaPreguntaStaffView(LoginRequiredMixin, View):
+    """Formulario guiado (cascada) para añadir nuevas preguntas al banco."""
+
+    template_name = 'staff/nueva_pregunta.html'
+
+    def get(self, request, *args, **kwargs):
+        form = PreguntaStaffForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = PreguntaStaffForm(request.POST)
+        if form.is_valid():
+            pregunta = form.save()
+            _messages.success(
+                request,
+                f'Pregunta guardada correctamente (ID #{pregunta.pk}).'
+            )
+            return redirect(reverse('staff:nueva_pregunta'))
+
+        _messages.error(request, 'Revisa los errores del formulario.')
+        return render(request, self.template_name, {'form': form})
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ApiTemasPorOposicionView(View):
+    """GET /staff/api/temas/?oposicion_id=<id>"""
+
+    def get(self, request, *args, **kwargs):
+        oposicion_id = request.GET.get('oposicion_id')
+        if not oposicion_id:
+            return JsonResponse({'error': 'oposicion_id requerido'}, status=400)
+        temas = (
+            Tema.objects.filter(oposiciones__id=oposicion_id)
+            .order_by('orden', 'titulo')
+            .values('id', 'titulo', 'bloque', 'orden')
+        )
+        return JsonResponse({'temas': list(temas)})
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ApiCapitulosPorTemaView(View):
+    """GET /staff/api/capitulos/?tema_id=<id>"""
+
+    def get(self, request, *args, **kwargs):
+        tema_id = request.GET.get('tema_id')
+        if not tema_id:
+            return JsonResponse({'error': 'tema_id requerido'}, status=400)
+        capitulos = (
+            Capitulo.objects.filter(tema__id=tema_id)
+            .order_by('orden', 'titulo')
+            .values('id', 'titulo', 'orden')
+        )
+        return JsonResponse({'capitulos': list(capitulos)})
+
+
+@method_decorator(staff_member_required, name='dispatch')
+class ApiArticulosPorCapituloView(View):
+    """GET /staff/api/articulos/?capitulo_id=<id>"""
+
+    def get(self, request, *args, **kwargs):
+        capitulo_id = request.GET.get('capitulo_id')
+        if not capitulo_id:
+            return JsonResponse({'error': 'capitulo_id requerido'}, status=400)
+        articulos = (
+            Articulo.objects.filter(capitulo__id=capitulo_id)
+            .order_by('numero')
+            .values('id', 'numero', 'contenido')
+        )
+        return JsonResponse({'articulos': list(articulos)})

@@ -27,6 +27,7 @@ urlpatterns = [
     path("", examen_views.HomeView.as_view(), name='home'),
     path("usuarios/", include("usuarios.urls")),
     path("examen/", include("examen.urls")),
+    path("examen/staff/", include("examen.staff_urls")),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

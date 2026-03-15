@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel Staff — OpoPrep{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="icon" href="{% static 'img/favicon.png' %}" sizes="25x25" type="image/png">
+    <link rel="stylesheet" href="{% static 'css/staff.css' %}?v=1">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="staff-body">
+<div class="staff-layout">
+
+    <!-- ── Sidebar ─────────────────────────────────────────── -->
+    <aside class="staff-sidebar">
+        <div class="staff-sidebar-header">
+            <a href="{% url 'staff:panel' %}" class="staff-sidebar-brand">
+                <div class="staff-brand-icon">
+                    <span class="material-symbols-outlined">admin_panel_settings</span>
+                </div>
+                <div>
+                    <p class="staff-brand-name">OpoPrep</p>
+                    <span class="staff-brand-badge">Staff</span>
+                </div>
+            </a>
+        </div>
+
+        <nav class="staff-nav">
+            <span class="staff-nav-section">Gestión de Contenido</span>
+            <a href="{% url 'staff:panel' %}"
+               class="staff-nav-link {% if request.resolver_match.url_name == 'panel' %}active{% endif %}">
+                <span class="material-symbols-outlined">dashboard</span>
+                Panel Principal
+            </a>
+            <a href="{% url 'staff:nueva_pregunta' %}"
+               class="staff-nav-link {% if request.resolver_match.url_name == 'nueva_pregunta' %}active{% endif %}">
+                <span class="material-symbols-outlined">add_circle</span>
+                Nueva Pregunta
+            </a>
+
+            <span class="staff-nav-section">Administración</span>
+            <a href="{% url 'admin:index' %}" class="staff-nav-link" target="_blank">
+                <span class="material-symbols-outlined">settings</span>
+                Admin Django
+            </a>
+            <a href="{% url 'home' %}" class="staff-nav-link">
+                <span class="material-symbols-outlined">arrow_back</span>
+                Volver a la App
+            </a>
+        </nav>
+
+        <div class="staff-sidebar-footer">
+            <div class="staff-user-info">
+                <div class="staff-user-avatar">
+                    <span class="material-symbols-outlined" style="font-size:1.1rem;">person</span>
+                </div>
+                <div>
+                    <p class="staff-user-name">
+                        {% if request.user.perfil and request.user.perfil.nombre %}
+                            {{ request.user.perfil.nombre }}
+                        {% else %}
+                            {{ request.user.email|truncatechars:20 }}
+                        {% endif %}
+                    </p>
+                    <p class="staff-user-email">{{ request.user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── Contenido principal ─────────────────────────────── -->
+    <main class="staff-main">
+
+        <!-- Mensajes del sistema -->
+        {% if messages %}
+        <div style="margin-bottom: 1rem;">
+            {% for message in messages %}
+            <div class="staff-alert {% if message.tags == 'success' %}staff-alert-success{% else %}staff-alert-error{% endif %}">
+                <span class="material-symbols-outlined" style="font-size:1.1rem;">
+                    {% if message.tags == 'success' %}check_circle{% else %}warning{% endif %}
+                </span>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+</div>
+
+<script src="{% static 'js/staff_cascade.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,254 @@
+{% extends "staff/base_staff.html" %}
+
+{% block title %}Nueva Pregunta — Staff OpoPrep{% endblock %}
+
+{% block content %}
+<!-- ── Cabecera ─────────────────────────────────────────────────── -->
+<div class="staff-page-header">
+    <div>
+        <h1 class="staff-page-title">
+            <span class="material-symbols-outlined" style="font-size:1.4rem;vertical-align:middle;">add_circle</span>
+            Nueva Pregunta
+        </h1>
+        <p class="staff-breadcrumb">
+            <a href="{% url 'staff:panel' %}" style="color:var(--staff-muted);text-decoration:none;">Panel</a>
+            &rsaquo; Añadir pregunta
+        </p>
+    </div>
+    <a href="{% url 'staff:panel' %}" class="btn-staff btn-staff-outline">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Volver al panel
+    </a>
+</div>
+
+<form method="post" id="form-nueva-pregunta" novalidate>
+    {% csrf_token %}
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SECCIÓN 1: Selección en Cascada (Oposición → Artículo)
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="staff-card" style="margin-bottom:1.5rem;">
+        <div class="staff-card-header">
+            <h2 class="staff-card-title">
+                <span class="material-symbols-outlined" style="font-size:1rem;">filter_alt</span>
+                Localiza el Artículo de Referencia
+            </h2>
+            <span style="font-size:0.78rem;color:var(--staff-muted);">
+                Selecciona en orden para filtrar el artículo.
+            </span>
+        </div>
+        <div class="staff-card-body">
+            <div class="staff-wizard">
+
+                <!-- Paso 1: Oposición -->
+                <div class="staff-step-card" id="step-oposicion">
+                    <div class="staff-step-header">
+                        <span class="staff-step-num">1</span>
+                        <p class="staff-step-title">{{ form.oposicion_selector.label }}</p>
+                    </div>
+                    <div class="staff-step-body">
+                        {{ form.oposicion_selector }}
+                        {% if form.oposicion_selector.help_text %}
+                        <small style="color:var(--staff-muted);font-size:0.75rem;display:block;margin-top:0.4rem;">
+                            {{ form.oposicion_selector.help_text }}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Paso 2: Tema -->
+                <div class="staff-step-card" id="step-tema">
+                    <div class="staff-step-header">
+                        <span class="staff-step-num">2</span>
+                        <p class="staff-step-title">{{ form.tema_selector.label }}</p>
+                    </div>
+                    <div class="staff-step-body">
+                        {{ form.tema_selector }}
+                        {% if form.tema_selector.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.tema_selector.errors.as_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Paso 3: Capítulo -->
+                <div class="staff-step-card" id="step-capitulo">
+                    <div class="staff-step-header">
+                        <span class="staff-step-num">3</span>
+                        <p class="staff-step-title">{{ form.capitulo_selector.label }}</p>
+                    </div>
+                    <div class="staff-step-body">
+                        {{ form.capitulo_selector }}
+                        {% if form.capitulo_selector.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.capitulo_selector.errors.as_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Paso 4: Artículo + Preview -->
+                <div class="staff-step-card" id="step-articulo">
+                    <div class="staff-step-header">
+                        <span class="staff-step-num">4</span>
+                        <p class="staff-step-title">{{ form.articulo.label }}</p>
+                    </div>
+                    <div class="staff-step-body">
+                        {{ form.articulo }}
+                        {% if form.articulo.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.articulo.errors.as_text }}</small>
+                        {% endif %}
+
+                        <!-- Preview del artículo seleccionado -->
+                        <div style="margin-top:0.75rem;">
+                            <small style="color:var(--staff-muted);font-size:0.75rem;font-weight:600;
+                                          text-transform:uppercase;letter-spacing:0.05em;">
+                                Contenido del artículo
+                            </small>
+                            <div class="staff-preview" id="staff-articulo-preview">
+                                <em class="staff-preview-placeholder">
+                                    El contenido del artículo seleccionado aparecerá aquí.
+                                </em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>{# /staff-wizard #}
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SECCIÓN 2: Redacción de la Pregunta
+         ═══════════════════════════════════════════════════════════ -->
+    <div class="staff-card" id="step-pregunta">
+        <div class="staff-card-header">
+            <h2 class="staff-card-title">
+                <span class="material-symbols-outlined" style="font-size:1rem;">edit_note</span>
+                Redacta la Pregunta
+            </h2>
+        </div>
+        <div class="staff-card-body">
+
+            <!-- Enunciado -->
+            <div style="margin-bottom:1.25rem;">
+                <label for="{{ form.enunciado.id_for_label }}"
+                       style="font-weight:600;font-size:0.875rem;color:var(--staff-primary);display:block;margin-bottom:0.4rem;">
+                    {{ form.enunciado.label }}
+                </label>
+                {{ form.enunciado }}
+                {% if form.enunciado.errors %}
+                <small style="color:var(--staff-danger);">{{ form.enunciado.errors.as_text }}</small>
+                {% endif %}
+            </div>
+
+            <!-- Respuestas A, B, C, D -->
+            <div style="margin-bottom:0.5rem;">
+                <label style="font-weight:600;font-size:0.875rem;color:var(--staff-primary);
+                               display:block;margin-bottom:0.75rem;">
+                    Respuestas posibles
+                </label>
+                <div class="staff-respuestas-grid">
+
+                    {% for letra, field_name in "A,respuesta_a|B,respuesta_b|C,respuesta_c|D,respuesta_d"|split_by_pipe %}
+                    {% endfor %}
+
+                    <!-- Respuesta A -->
+                    <div class="staff-respuesta-item">
+                        <span class="staff-respuesta-label">A</span>
+                        {{ form.respuesta_a }}
+                        {% if form.respuesta_a.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.respuesta_a.errors.as_text }}</small>
+                        {% endif %}
+                    </div>
+                    <!-- Respuesta B -->
+                    <div class="staff-respuesta-item">
+                        <span class="staff-respuesta-label">B</span>
+                        {{ form.respuesta_b }}
+                        {% if form.respuesta_b.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.respuesta_b.errors.as_text }}</small>
+                        {% endif %}
+                    </div>
+                    <!-- Respuesta C -->
+                    <div class="staff-respuesta-item">
+                        <span class="staff-respuesta-label">C</span>
+                        {{ form.respuesta_c }}
+                        {% if form.respuesta_c.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.respuesta_c.errors.as_text }}</small>
+                        {% endif %}
+                    </div>
+                    <!-- Respuesta D -->
+                    <div class="staff-respuesta-item">
+                        <span class="staff-respuesta-label">D</span>
+                        {{ form.respuesta_d }}
+                        {% if form.respuesta_d.errors %}
+                        <small style="color:var(--staff-danger);">{{ form.respuesta_d.errors.as_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Respuesta correcta -->
+            <div style="margin-bottom:1.25rem;background:#f0f7f4;border-radius:8px;padding:1rem;">
+                <label style="font-weight:700;font-size:0.875rem;color:var(--staff-primary);
+                               display:block;margin-bottom:0.75rem;">
+                    {{ form.respuesta_correcta.label }}
+                </label>
+                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                    {% for radio in form.respuesta_correcta %}
+                    <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;
+                                  font-weight:600;color:var(--staff-text);">
+                        {{ radio.tag }}
+                        <span style="width:26px;height:26px;border-radius:50%;
+                                      background:var(--staff-primary);color:#fff;
+                                      display:inline-flex;align-items:center;justify-content:center;
+                                      font-size:0.8rem;font-weight:700;">
+                            {{ radio.choice_label }}
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.respuesta_correcta.errors %}
+                <small style="color:var(--staff-danger);">{{ form.respuesta_correcta.errors.as_text }}</small>
+                {% endif %}
+            </div>
+
+            <!-- Explicación (colapsable) -->
+            <details style="margin-bottom:1rem;">
+                <summary style="font-weight:600;font-size:0.875rem;color:var(--staff-primary);
+                                 cursor:pointer;margin-bottom:0.5rem;">
+                    {{ form.explicacion.label }} (opcional)
+                </summary>
+                <div style="margin-top:0.5rem;">
+                    {{ form.explicacion }}
+                    <small style="color:var(--staff-muted);font-size:0.75rem;">
+                        Explicación que se mostrará al alumno tras responder. Admite texto plano.
+                    </small>
+                </div>
+            </details>
+
+            <!-- Acciones -->
+            <div style="display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--staff-border);">
+                <button type="submit" class="btn-staff btn-staff-accent" id="btn-guardar">
+                    <span class="material-symbols-outlined">save</span>
+                    Guardar Pregunta
+                </button>
+                <button type="reset" class="btn-staff btn-staff-outline">
+                    <span class="material-symbols-outlined">restart_alt</span>
+                    Limpiar Formulario
+                </button>
+                <a href="{% url 'staff:panel' %}" class="btn-staff" style="background:#6b8577;">
+                    <span class="material-symbols-outlined">close</span>
+                    Cancelar
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-activar el primer step-card al cargar
+document.getElementById('step-oposicion')?.classList.add('active');
+</script>
+{% endblock %}

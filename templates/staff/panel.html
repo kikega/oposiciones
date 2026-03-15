@@ -1,0 +1,139 @@
+{% extends "staff/base_staff.html" %}
+
+{% block title %}Panel Staff — OpoPrep{% endblock %}
+
+{% block content %}
+<!-- ── Cabecera ─────────────────────────────────────────────────── -->
+<div class="staff-page-header">
+    <div>
+        <h1 class="staff-page-title">
+            <span class="material-symbols-outlined" style="font-size:1.4rem;vertical-align:middle;">dashboard</span>
+            Panel de Carga
+        </h1>
+        <p class="staff-breadcrumb">Gestión del banco de preguntas</p>
+    </div>
+    <a href="{% url 'staff:nueva_pregunta' %}" class="btn-staff btn-staff-accent">
+        <span class="material-symbols-outlined">add_circle</span>
+        Nueva Pregunta
+    </a>
+</div>
+
+<!-- ── KPIs ─────────────────────────────────────────────────────── -->
+<div class="staff-kpi-grid">
+    <div class="staff-kpi-card">
+        <div class="staff-kpi-icon green">
+            <span class="material-symbols-outlined">quiz</span>
+        </div>
+        <div>
+            <div class="staff-kpi-value">{{ total_preguntas }}</div>
+            <div class="staff-kpi-label">Preguntas totales</div>
+        </div>
+    </div>
+    <div class="staff-kpi-card">
+        <div class="staff-kpi-icon blue">
+            <span class="material-symbols-outlined">article</span>
+        </div>
+        <div>
+            <div class="staff-kpi-value">{{ total_articulos }}</div>
+            <div class="staff-kpi-label">Artículos en el temario</div>
+        </div>
+    </div>
+    <div class="staff-kpi-card">
+        <div class="staff-kpi-icon {% if articulos_sin_preguntas > 0 %}amber{% else %}green{% endif %}">
+            <span class="material-symbols-outlined">{% if articulos_sin_preguntas > 0 %}warning{% else %}check_circle{% endif %}</span>
+        </div>
+        <div>
+            <div class="staff-kpi-value">{{ articulos_sin_preguntas }}</div>
+            <div class="staff-kpi-label">Artículos sin preguntas</div>
+        </div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;">
+
+    <!-- ── Últimas preguntas ──────────────────────────────────── -->
+    <div class="staff-card">
+        <div class="staff-card-header">
+            <h2 class="staff-card-title">
+                <span class="material-symbols-outlined" style="font-size:1rem;">history</span>
+                Últimas preguntas añadidas
+            </h2>
+        </div>
+        <div style="overflow-x:auto;">
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Enunciado</th>
+                        <th>Artículo</th>
+                        <th>Tema</th>
+                        <th>Resp.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pregunta in ultimas_preguntas %}
+                    <tr>
+                        <td><code style="font-size:0.75rem;color:#6b8577;">{{ pregunta.pk }}</code></td>
+                        <td style="max-width:280px;">
+                            <span title="{{ pregunta.enunciado }}">
+                                {{ pregunta.enunciado|truncatechars:70 }}
+                            </span>
+                        </td>
+                        <td style="white-space:nowrap;font-size:0.8rem;">
+                            Art. {{ pregunta.articulo.numero }}
+                        </td>
+                        <td style="font-size:0.8rem;color:#6b8577;">
+                            {{ pregunta.articulo.capitulo.tema.titulo|truncatechars:30 }}
+                        </td>
+                        <td>
+                            <span class="staff-badge">{{ pregunta.respuesta_correcta }}</span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;color:#6b8577;padding:2rem;">
+                            Aún no hay preguntas en el banco.
+                            <a href="{% url 'staff:nueva_pregunta' %}" style="color:var(--staff-accent);">Añade la primera</a>.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Preguntas por oposición ────────────────────────────── -->
+    <div class="staff-card">
+        <div class="staff-card-header">
+            <h2 class="staff-card-title">
+                <span class="material-symbols-outlined" style="font-size:1rem;">bar_chart</span>
+                Banco por Oposición
+            </h2>
+        </div>
+        <div class="staff-card-body">
+            {% for op in preguntas_por_oposicion %}
+            <div style="margin-bottom:1rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
+                    <span style="font-size:0.82rem;font-weight:600;color:var(--staff-primary);">
+                        {{ op.nombre|truncatechars:28 }}
+                    </span>
+                    <span style="font-size:0.8rem;font-weight:700;color:var(--staff-accent);">
+                        {{ op.total_banco }}
+                    </span>
+                </div>
+                {% if total_preguntas > 0 %}
+                <div style="background:#e8f5ee;border-radius:100px;height:6px;overflow:hidden;">
+                    <div style="height:6px;border-radius:100px;background:var(--staff-accent);
+                                width:{% widthratio op.total_banco total_preguntas 100 %}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p style="color:var(--staff-muted);font-size:0.875rem;">No hay oposiciones configuradas.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

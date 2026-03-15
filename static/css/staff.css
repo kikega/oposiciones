@@ -1,0 +1,540 @@
+/* ============================================================
+   staff.css — Estilos exclusivos del Panel de Carga Staff
+   Paleta diferenciada: verde profundo para distinguirlo
+   visualmente del área de alumnos.
+   ============================================================ */
+
+:root {
+    --staff-primary: #1a4d2e;
+    --staff-primary-light: #2d6a4f;
+    --staff-accent: #52b788;
+    --staff-accent-light: #b7e4c7;
+    --staff-bg: #f0f7f4;
+    --staff-sidebar-w: 260px;
+    --staff-text: #1b2d24;
+    --staff-muted: #6b8577;
+    --staff-border: #d8eadf;
+    --staff-danger: #c0392b;
+    --staff-warning: #e67e22;
+    --staff-card-shadow: 0 2px 8px rgba(26, 77, 46, 0.08);
+}
+
+/* ── Reset & base ────────────────────────────────────────── */
+body.staff-body {
+    font-family: 'Public Sans', sans-serif;
+    background-color: var(--staff-bg);
+    color: var(--staff-text);
+    margin: 0;
+}
+
+/* ── Layout ──────────────────────────────────────────────── */
+.staff-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+.staff-sidebar {
+    width: var(--staff-sidebar-w);
+    min-height: 100vh;
+    background: var(--staff-primary);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+}
+
+.staff-sidebar-header {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.staff-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+}
+
+.staff-brand-icon {
+    background: var(--staff-accent);
+    color: var(--staff-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.staff-brand-name {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.staff-brand-badge {
+    background: var(--staff-accent);
+    color: var(--staff-primary);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+}
+
+.staff-nav {
+    flex: 1;
+    padding: 1rem 0;
+}
+
+.staff-nav-section {
+    padding: 0.5rem 1.25rem;
+    color: rgba(255,255,255,0.4);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.75rem;
+}
+
+.staff-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 1.25rem;
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.18s;
+    border-left: 3px solid transparent;
+}
+
+.staff-nav-link:hover {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border-left-color: var(--staff-accent);
+}
+
+.staff-nav-link.active {
+    background: rgba(82, 183, 136, 0.15);
+    color: var(--staff-accent);
+    border-left-color: var(--staff-accent);
+    font-weight: 600;
+}
+
+.staff-nav-link .material-symbols-outlined {
+    font-size: 1.1rem;
+}
+
+.staff-sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.staff-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.staff-user-avatar {
+    width: 34px;
+    height: 34px;
+    background: var(--staff-accent-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--staff-primary);
+    font-size: 1rem;
+}
+
+.staff-user-name {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.staff-user-email {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.72rem;
+    margin: 0;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Contenido principal ─────────────────────────────────── */
+.staff-main {
+    margin-left: var(--staff-sidebar-w);
+    flex: 1;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+/* ── Header de página ────────────────────────────────────── */
+.staff-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--staff-border);
+}
+
+.staff-page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--staff-primary);
+    margin: 0;
+}
+
+.staff-breadcrumb {
+    font-size: 0.8rem;
+    color: var(--staff-muted);
+    margin: 0;
+}
+
+/* ── KPI Cards ───────────────────────────────────────────── */
+.staff-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.staff-kpi-card {
+    background: #fff;
+    border: 1px solid var(--staff-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: var(--staff-card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.staff-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(26, 77, 46, 0.12);
+}
+
+.staff-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.staff-kpi-icon.green { background: #d8f3dc; color: var(--staff-primary); }
+.staff-kpi-icon.amber { background: #fff3cd; color: #856404; }
+.staff-kpi-icon.red   { background: #f8d7da; color: var(--staff-danger); }
+.staff-kpi-icon.blue  { background: #d0e8ff; color: #0d4c83; }
+
+.staff-kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--staff-primary);
+    line-height: 1;
+    margin-bottom: 0.1rem;
+}
+
+.staff-kpi-label {
+    font-size: 0.8rem;
+    color: var(--staff-muted);
+    font-weight: 500;
+}
+
+/* ── Panel cards ─────────────────────────────────────────── */
+.staff-card {
+    background: #fff;
+    border: 1px solid var(--staff-border);
+    border-radius: 12px;
+    box-shadow: var(--staff-card-shadow);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.staff-card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--staff-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fafdfb;
+}
+
+.staff-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--staff-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.staff-card-body {
+    padding: 1.5rem;
+}
+
+/* ── Botón primario del staff ────────────────────────────── */
+.btn-staff {
+    background: var(--staff-primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s, transform 0.15s;
+}
+
+.btn-staff:hover {
+    background: var(--staff-primary-light);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-staff-accent {
+    background: var(--staff-accent);
+    color: var(--staff-primary);
+}
+
+.btn-staff-accent:hover {
+    background: #40916c;
+    color: #fff;
+}
+
+.btn-staff-outline {
+    background: transparent;
+    color: var(--staff-primary);
+    border: 1.5px solid var(--staff-primary);
+}
+
+.btn-staff-outline:hover {
+    background: var(--staff-primary);
+    color: #fff;
+}
+
+/* ── Tabla de últimas preguntas ──────────────────────────── */
+.staff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.staff-table th {
+    background: #f0f7f4;
+    color: var(--staff-muted);
+    font-weight: 700;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--staff-border);
+    text-align: left;
+}
+
+.staff-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--staff-border);
+    vertical-align: middle;
+    color: var(--staff-text);
+}
+
+.staff-table tr:last-child td { border-bottom: none; }
+.staff-table tr:hover td { background: #f8fdf9; }
+
+/* ── Badge respuesta correcta ────────────────────────────── */
+.staff-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.8rem;
+    background: var(--staff-accent-light);
+    color: var(--staff-primary);
+}
+
+/* ── Formulario wizard (nueva pregunta) ──────────────────── */
+.staff-wizard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .staff-wizard { grid-template-columns: 1fr; }
+}
+
+.staff-step-card {
+    background: #fff;
+    border: 1.5px solid var(--staff-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.staff-step-card.active {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
+}
+
+.staff-step-header {
+    padding: 0.75rem 1rem;
+    background: #f0f7f4;
+    border-bottom: 1px solid var(--staff-border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.staff-step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--staff-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.staff-step-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--staff-primary);
+    margin: 0;
+}
+
+.staff-step-body {
+    padding: 1rem;
+}
+
+/* ── Selectores en cascada ───────────────────────────────── */
+.staff-select-loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* ── Preview artículo ────────────────────────────────────── */
+.staff-preview {
+    background: #f0f7f4;
+    border-left: 4px solid var(--staff-accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: var(--staff-text);
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.6;
+}
+
+.staff-preview-placeholder {
+    color: var(--staff-muted);
+    font-style: italic;
+}
+
+/* ── Sección de respuestas ───────────────────────────────── */
+.staff-respuestas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .staff-respuestas-grid { grid-template-columns: 1fr; }
+}
+
+.staff-respuesta-item {
+    position: relative;
+}
+
+.staff-respuesta-label {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.75rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--staff-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.staff-respuesta-item textarea {
+    padding-left: 2.5rem !important;
+}
+
+/* ── Alertas del panel ───────────────────────────────────── */
+.staff-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.staff-alert-success {
+    background: #d8f3dc;
+    color: var(--staff-primary);
+    border-left: 4px solid var(--staff-accent);
+}
+
+.staff-alert-error {
+    background: #f8d7da;
+    color: var(--staff-danger);
+    border-left: 4px solid var(--staff-danger);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .staff-sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+    }
+    .staff-main {
+        margin-left: 0;
+    }
+    .staff-layout {
+        flex-direction: column;
+    }
+}
