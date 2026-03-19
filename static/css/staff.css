@@ -388,6 +388,13 @@ body.staff-body {
     gap: 1.5rem;
 }
 
+/* En resoluciones de escritorio/tablet-landscape, el artículo ocupa toda la fila (Paso 3) */
+@media (min-width: 993px) {
+    #step-articulo {
+        grid-column: 1 / -1;
+    }
+}
+
 @media (max-width: 992px) {
     .staff-wizard { grid-template-columns: 1fr; }
 }

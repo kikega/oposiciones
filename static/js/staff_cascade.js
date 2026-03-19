@@ -12,13 +12,12 @@
 
 (function () {
     // ── Referencias a los selects ─────────────────────────────────────────────
-    const selOposicion = document.getElementById('id_oposicion_selector');
     const selTema      = document.getElementById('id_tema_selector');
     const selCapitulo  = document.getElementById('id_capitulo_selector');
     const selArticulo  = document.getElementById('id_articulo');
     const previewBox   = document.getElementById('staff-articulo-preview');
 
-    if (!selOposicion) return; // No estamos en la página del wizard
+    if (!selTema) return; // No estamos en la página del wizard
 
     // ── Utilidades ────────────────────────────────────────────────────────────
 
@@ -71,33 +70,7 @@
         }
     }
 
-    // ── Paso 1: Oposición → Temas ─────────────────────────────────────────────
-    selOposicion.addEventListener('change', async function () {
-        const oposicionId = this.value;
-
-        // Reiniciar cascada hacia abajo
-        resetSelect(selTema,      '-- Primero elige una oposición --');
-        resetSelect(selCapitulo,  '-- Primero elige un tema --');
-        resetSelect(selArticulo,  '-- Primero elige un capítulo --');
-        ocultarPreview();
-
-        if (!oposicionId) return;
-
-        setLoading(selTema, true);
-        try {
-            const data = await fetchJson(`/examen/staff/api/temas/?oposicion_id=${oposicionId}`);
-            const opciones = data.temas.map(t => ({
-                id: t.id,
-                label: t.bloque ? `[${t.bloque}] ${t.titulo}` : t.titulo,
-            }));
-            poblarSelect(selTema, opciones, '-- Selecciona un tema --');
-        } catch (e) {
-            console.error('Error cargando temas:', e);
-            resetSelect(selTema, '-- Error al cargar temas --');
-        } finally {
-            setLoading(selTema, false);
-        }
-    });
+    // (Paso 1, Oposición, ha sido eliminado. Los temas se cargan por defecto en el HTML)
 
     // ── Paso 2: Tema → Capítulos ──────────────────────────────────────────────
     selTema.addEventListener('change', async function () {
@@ -192,7 +165,6 @@
         if (card) card.classList.add('active');
     }
 
-    selOposicion?.addEventListener('change', () => activarStep('step-tema'));
     selTema?.addEventListener('change',      () => activarStep('step-capitulo'));
     selCapitulo?.addEventListener('change',  () => activarStep('step-articulo'));
     selArticulo?.addEventListener('change',  () => activarStep('step-pregunta'));

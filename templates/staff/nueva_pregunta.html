@@ -2,6 +2,41 @@
 
 {% block title %}Nueva Pregunta — Staff OpoPrep{% endblock %}
 
+{% block extra_head %}
+<!-- Select2 CSS para buscador en select de Tema -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+/* Ajustar Select2 al diseño global de Staff */
+.select2-container .select2-selection--single {
+    height: 3rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--staff-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--staff-text);
+    display: flex;
+    align-items: center;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 3rem;
+    right: 10px;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--staff-text);
+    line-height: normal;
+    padding-left: 0;
+}
+.select2-dropdown {
+    border-color: var(--staff-border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.select2-search__field {
+    border-radius: 4px !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- ── Cabecera ─────────────────────────────────────────────────── -->
 <div class="staff-page-header">
@@ -40,26 +75,10 @@
         <div class="staff-card-body">
             <div class="staff-wizard">
 
-                <!-- Paso 1: Oposición -->
-                <div class="staff-step-card" id="step-oposicion">
+                <!-- Paso 1: Tema -->
+                <div class="staff-step-card active" id="step-tema">
                     <div class="staff-step-header">
                         <span class="staff-step-num">1</span>
-                        <p class="staff-step-title">{{ form.oposicion_selector.label }}</p>
-                    </div>
-                    <div class="staff-step-body">
-                        {{ form.oposicion_selector }}
-                        {% if form.oposicion_selector.help_text %}
-                        <small style="color:var(--staff-muted);font-size:0.75rem;display:block;margin-top:0.4rem;">
-                            {{ form.oposicion_selector.help_text }}
-                        </small>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <!-- Paso 2: Tema -->
-                <div class="staff-step-card" id="step-tema">
-                    <div class="staff-step-header">
-                        <span class="staff-step-num">2</span>
                         <p class="staff-step-title">{{ form.tema_selector.label }}</p>
                     </div>
                     <div class="staff-step-body">
@@ -70,10 +89,10 @@
                     </div>
                 </div>
 
-                <!-- Paso 3: Capítulo -->
+                <!-- Paso 2: Capítulo -->
                 <div class="staff-step-card" id="step-capitulo">
                     <div class="staff-step-header">
-                        <span class="staff-step-num">3</span>
+                        <span class="staff-step-num">2</span>
                         <p class="staff-step-title">{{ form.capitulo_selector.label }}</p>
                     </div>
                     <div class="staff-step-body">
@@ -84,10 +103,10 @@
                     </div>
                 </div>
 
-                <!-- Paso 4: Artículo + Preview -->
+                <!-- Paso 3: Artículo + Preview -->
                 <div class="staff-step-card" id="step-articulo">
                     <div class="staff-step-header">
-                        <span class="staff-step-num">4</span>
+                        <span class="staff-step-num">3</span>
                         <p class="staff-step-title">{{ form.articulo.label }}</p>
                     </div>
                     <div class="staff-step-body">
@@ -252,8 +271,29 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- jQuery y Select2 JS -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
-// Auto-activar el primer step-card al cargar
-document.getElementById('step-oposicion')?.classList.add('active');
+$(document).ready(function() {
+    // Inicializar autocompletado y búsqueda avanzada en el selector de Temas
+    $('#id_tema_selector').select2({
+        width: '100%',
+        placeholder: '-- Escribe aquí para filtrar por título u orden del tema --',
+        language: {
+            noResults: function() { return "No se encontraron temas coincidentes."; }
+        }
+    });
+
+    // Reemitir el evento change de forma NATIVA para que el VanillaJS 
+    // de staff_cascade.js (que usa addEventListener) lo capture y proceda a descargar los Capítulos.
+    $('#id_tema_selector').on('select2:select', function (e) {
+        this.dispatchEvent(new Event('change'));
+    });
+});
+
+// Auto-activar el primer step-card (Tema) al cargar
+document.getElementById('step-tema')?.classList.add('active');
 </script>
 {% endblock %}

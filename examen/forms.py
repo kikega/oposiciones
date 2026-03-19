@@ -6,6 +6,14 @@ from django.utils.translation import gettext_lazy as _
 from .models import Oposicion, Tema, Capitulo, Articulo, Pregunta
 
 
+class TemaModelChoiceField(forms.ModelChoiceField):
+    """Sobrescribe la renderización del dropdown para incluir el número de orden visiblemente."""
+    def label_from_instance(self, obj):
+        titulo_truncado = (obj.titulo[:90] + "...") if len(obj.titulo) > 90 else obj.titulo
+        # Ejemplo: "Tema 1: La Constitución Española..."
+        return f"Tema {obj.orden}: {titulo_truncado}"
+
+
 class PreguntaStaffForm(forms.ModelForm):
     """Formulario guiado para la creación de preguntas por el staff.
 
@@ -15,26 +23,14 @@ class PreguntaStaffForm(forms.ModelForm):
     """
 
     # --- Campos de navegación en cascada (no son campos del modelo) ---
-    oposicion_selector = forms.ModelChoiceField(
-        queryset=Oposicion.objects.all().order_by('nombre'),
-        label=_('1. Selecciona la Oposición'),
+    tema_selector = TemaModelChoiceField(
+        queryset=Tema.objects.all().order_by('orden', 'titulo'),
+        label=_('1. Selecciona el Tema'),
         required=True,
-        empty_label=_('-- Elige una oposición --'),
-        widget=forms.Select(attrs={
-            'id': 'id_oposicion_selector',
-            'class': 'form-select form-select-lg',
-        }),
-        help_text=_('Filtra los temas disponibles según la oposición.'),
-    )
-    tema_selector = forms.ModelChoiceField(
-        queryset=Tema.objects.none(),
-        label=_('2. Selecciona el Tema'),
-        required=True,
-        empty_label=_('-- Primero elige una oposición --'),
+        empty_label=_('-- Elige un tema --'),
         widget=forms.Select(attrs={
             'id': 'id_tema_selector',
             'class': 'form-select form-select-lg',
-            'disabled': 'disabled',
         }),
         help_text=_('Filtra los capítulos disponibles según el tema.'),
     )
@@ -55,7 +51,6 @@ class PreguntaStaffForm(forms.ModelForm):
         model = Pregunta
         fields = [
             # Campos de navegación (no del modelo)
-            'oposicion_selector',
             'tema_selector',
             'capitulo_selector',
             # Campos reales del modelo
@@ -109,7 +104,7 @@ class PreguntaStaffForm(forms.ModelForm):
             }),
         }
         labels = {
-            'articulo': _('4. Artículo de Referencia'),
+            'articulo': _('3. Artículo de Referencia'),
             'enunciado': _('Enunciado de la pregunta'),
             'respuesta_a': _('Respuesta A'),
             'respuesta_b': _('Respuesta B'),
@@ -127,15 +122,6 @@ class PreguntaStaffForm(forms.ModelForm):
 
         # Si el formulario vuelve con datos (POST), reconstruir los querysets
         # para que la validación no falle por opciones inválidas.
-        if 'oposicion_selector' in self.data:
-            try:
-                oposicion_id = int(self.data.get('oposicion_selector'))
-                self.fields['tema_selector'].queryset = Tema.objects.filter(
-                    oposiciones__id=oposicion_id
-                ).order_by('orden', 'titulo')
-                self.fields['tema_selector'].widget.attrs.pop('disabled', None)
-            except (ValueError, TypeError):
-                pass
 
         if 'tema_selector' in self.data:
             try:
