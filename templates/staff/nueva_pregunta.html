@@ -189,14 +189,26 @@
                     {{ form.respuesta_correcta.label }}
                 </label>
                 <div class="staff-radio-group" style="display:flex;gap:1rem;flex-wrap:wrap;">
-                    {% for radio in form.respuesta_correcta %}
-                    <label class="staff-radio-label">
-                        {{ radio.tag }}
-                        <span class="staff-radio-pill">
-                            {{ radio.choice_label }}
-                        </span>
+                    <!-- A -->
+                    <label class="staff-radio-label" for="id_respuesta_correcta_A">
+                        <input type="radio" name="respuesta_correcta" value="A" id="id_respuesta_correcta_A" {% if form.respuesta_correcta.value == 'A' %}checked{% endif %} class="staff-hidden-radio" style="position:absolute !important; opacity:0 !important; width:0 !important; height:0 !important; margin:0 !important; padding:0 !important; pointer-events:none !important; appearance:none !important; -webkit-appearance:none !important;">
+                        <span class="staff-radio-pill">A</span>
                     </label>
-                    {% endfor %}
+                    <!-- B -->
+                    <label class="staff-radio-label" for="id_respuesta_correcta_B">
+                        <input type="radio" name="respuesta_correcta" value="B" id="id_respuesta_correcta_B" {% if form.respuesta_correcta.value == 'B' %}checked{% endif %} class="staff-hidden-radio" style="position:absolute !important; opacity:0 !important; width:0 !important; height:0 !important; margin:0 !important; padding:0 !important; pointer-events:none !important; appearance:none !important; -webkit-appearance:none !important;">
+                        <span class="staff-radio-pill">B</span>
+                    </label>
+                    <!-- C -->
+                    <label class="staff-radio-label" for="id_respuesta_correcta_C">
+                        <input type="radio" name="respuesta_correcta" value="C" id="id_respuesta_correcta_C" {% if form.respuesta_correcta.value == 'C' %}checked{% endif %} class="staff-hidden-radio" style="position:absolute !important; opacity:0 !important; width:0 !important; height:0 !important; margin:0 !important; padding:0 !important; pointer-events:none !important; appearance:none !important; -webkit-appearance:none !important;">
+                        <span class="staff-radio-pill">C</span>
+                    </label>
+                    <!-- D -->
+                    <label class="staff-radio-label" for="id_respuesta_correcta_D">
+                        <input type="radio" name="respuesta_correcta" value="D" id="id_respuesta_correcta_D" {% if form.respuesta_correcta.value == 'D' %}checked{% endif %} class="staff-hidden-radio" style="position:absolute !important; opacity:0 !important; width:0 !important; height:0 !important; margin:0 !important; padding:0 !important; pointer-events:none !important; appearance:none !important; -webkit-appearance:none !important;">
+                        <span class="staff-radio-pill">D</span>
+                    </label>
                 </div>
                 {% if form.respuesta_correcta.errors %}
                 <small style="color:var(--staff-danger);">{{ form.respuesta_correcta.errors.as_text }}</small>
