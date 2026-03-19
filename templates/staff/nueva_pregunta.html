@@ -188,15 +188,11 @@
                                display:block;margin-bottom:0.75rem;">
                     {{ form.respuesta_correcta.label }}
                 </label>
-                <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+                <div class="staff-radio-group" style="display:flex;gap:1rem;flex-wrap:wrap;">
                     {% for radio in form.respuesta_correcta %}
-                    <label style="display:flex;align-items:center;gap:0.4rem;cursor:pointer;
-                                  font-weight:600;color:var(--staff-text);">
+                    <label class="staff-radio-label">
                         {{ radio.tag }}
-                        <span style="width:26px;height:26px;border-radius:50%;
-                                      background:var(--staff-primary);color:#fff;
-                                      display:inline-flex;align-items:center;justify-content:center;
-                                      font-size:0.8rem;font-weight:700;">
+                        <span class="staff-radio-pill">
                             {{ radio.choice_label }}
                         </span>
                     </label>

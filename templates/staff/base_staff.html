@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     <link rel="icon" href="{% static 'img/favicon.png' %}" sizes="25x25" type="image/png">
-    <link rel="stylesheet" href="{% static 'css/staff.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/staff.css' %}?v={% now 'U' %}">
     {% block extra_head %}{% endblock %}
 </head>
 <body class="staff-body">

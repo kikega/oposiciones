@@ -601,6 +601,56 @@ body.staff-body {
     border-left: 4px solid var(--staff-danger);
 }
 
+/* ── Radio Pills Custom (Respuesta correcta) ─────────────── */
+.staff-radio-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+}
+
+.staff-radio-label input[type="radio"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+}
+
+.staff-radio-pill {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--staff-border);
+    color: var(--staff-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.2s;
+}
+
+.staff-radio-label:hover .staff-radio-pill {
+    border-color: var(--staff-accent);
+    color: var(--staff-accent);
+}
+
+.staff-radio-label input[type="radio"]:checked + .staff-radio-pill {
+    background: var(--staff-primary);
+    border-color: var(--staff-primary);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(26, 77, 46, 0.25);
+    transform: scale(1.05);
+}
+
+.staff-radio-label input[type="radio"]:focus-visible + .staff-radio-pill {
+    box-shadow: 0 0 0 4px rgba(82, 183, 136, 0.4);
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
     .staff-sidebar {
