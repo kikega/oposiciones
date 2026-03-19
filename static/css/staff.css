@@ -439,6 +439,78 @@ body.staff-body {
     padding: 1rem;
 }
 
+/* ── Inputs, selects y textareas globales del formulario staff ── */
+.staff-card-body input[type="text"],
+.staff-card-body input[type="email"],
+.staff-card-body input[type="number"],
+.staff-card-body select,
+.staff-card-body textarea,
+.staff-step-body input[type="text"],
+.staff-step-body input[type="email"],
+.staff-step-body input[type="number"],
+.staff-step-body select,
+.staff-step-body textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px solid var(--staff-border);
+    border-radius: 8px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.9rem;
+    font-family: 'Public Sans', sans-serif;
+    color: var(--staff-text);
+    background: #fff;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    outline: none;
+}
+
+.staff-card-body input[type="text"]:focus,
+.staff-card-body input[type="email"]:focus,
+.staff-card-body input[type="number"]:focus,
+.staff-card-body select:focus,
+.staff-card-body textarea:focus,
+.staff-step-body input[type="text"]:focus,
+.staff-step-body input[type="email"]:focus,
+.staff-step-body input[type="number"]:focus,
+.staff-step-body select:focus,
+.staff-step-body textarea:focus {
+    border-color: var(--staff-accent);
+    box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.18);
+}
+
+/* Radio buttons — resetear estilos globales, dejar tamaño nativo */
+.staff-card-body input[type="radio"],
+.staff-card-body input[type="checkbox"] {
+    width: auto;
+    height: auto;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    outline: revert;
+    accent-color: var(--staff-accent);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Select del wizard (ancho completo) */
+.staff-step-body select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%236b8577' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.2rem;
+}
+
+/* Enunciado y explicación: textarea más alto */
+#id_enunciado,
+#id_explicacion {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.55;
+}
+
 /* ── Selectores en cascada ───────────────────────────────── */
 .staff-select-loading {
     opacity: 0.5;
@@ -468,7 +540,7 @@ body.staff-body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 @media (max-width: 768px) {
@@ -476,29 +548,34 @@ body.staff-body {
 }
 
 .staff-respuesta-item {
-    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
 }
 
 .staff-respuesta-label {
-    position: absolute;
-    top: 0.6rem;
-    left: 0.75rem;
-    width: 24px;
-    height: 24px;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--staff-primary);
     color: #fff;
     font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1;
+    margin-top: 0.45rem; /* alinear con el borde superior del textarea */
     pointer-events: none;
 }
 
-.staff-respuesta-item textarea {
-    padding-left: 2.5rem !important;
+.staff-respuesta-item textarea,
+.staff-respuesta-item input[type="text"] {
+    flex: 1;
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.5;
+    padding-left: 0.75rem !important; /* resetear el padding del absoluto anterior */
 }
 
 /* ── Alertas del panel ───────────────────────────────────── */
