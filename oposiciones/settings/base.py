@@ -173,6 +173,15 @@ LOGGING = {
             'utc': True, 
             'formatter': 'verbose',
         },
+        'file_errors': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/errors.log'),
+            'when': 'midnight',
+            'backupCount': 30,
+            'utc': True,
+            'formatter': 'verbose',
+        },
     },
 
     # ----------- REGISTRO DE EVENTOS ----------
@@ -189,6 +198,13 @@ LOGGING = {
         'access_logger': {
             'handlers': ['file_access'],
             'level': 'INFO',
+            'propagate': False,
+        },
+
+        # Errores generales de Django (captura los 500)
+        'django.request': {
+            'handlers': ['file_errors'],
+            'level': 'ERROR',
             'propagate': False,
         },
     },
